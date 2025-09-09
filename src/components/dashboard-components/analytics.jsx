@@ -40,7 +40,7 @@ const AnalyticsChart = ({ data = defaultData }) => {
   const numberFmt = new Intl.NumberFormat('en-US');
 
   // Resolve Chakra tokens to hex for Recharts
-  const [removedFill, sentFill, rejectedFill, tickColor] = useToken('colors', [
+  const [tickColor] = useToken('colors', [
     'blue.200',
     'green.200',
     'pink.200',
@@ -69,8 +69,8 @@ const AnalyticsChart = ({ data = defaultData }) => {
             barGap={4}
             barCategoryGap={30}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="month" />
+            <CartesianGrid strokeDasharray="8 8" vertical={false} stroke="#E5E7EB" />
+            <XAxis dataKey="month" axisLine={{ stroke: "#E5E7EB" }} tick={{ fill: "#6B7280", fontSize: 12, fontWeight: 400 }} tickLine={false} />
             <YAxis
               // leave width undefined or set to something wider (e.g. 56)
               allowDecimals={false}
@@ -79,7 +79,7 @@ const AnalyticsChart = ({ data = defaultData }) => {
               tickFormatter={(v) => numberFmt.format(v)}
               tickMargin={8}
               tick={{
-                fill: tickColor,
+                fill: "#6B7280",
                 fontSize: 12,
                 fontWeight: 400,
                 textAnchor: 'end',
@@ -89,22 +89,19 @@ const AnalyticsChart = ({ data = defaultData }) => {
             <Bar
               dataKey="removed"
               name="Listings Removed"
-              fill={removedFill}
-              radius={[4, 4, 0, 0]}
+              fill="#D7F0FC"
               barSize={6}
             />
             <Bar
               dataKey="sent"
               name="Notices Sent"
-              fill={sentFill}
-              radius={[4, 4, 0, 0]}
+              fill="#CDEFD9"
               barSize={6}
             />
             <Bar
               dataKey="rejected"
               name="Notices Rejected"
-              fill={rejectedFill}
-              radius={[4, 4, 0, 0]}
+              fill="#FEA4A3"
               barSize={6}
             />
           </BarChart>

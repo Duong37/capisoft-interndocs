@@ -1,23 +1,20 @@
 import React from 'react';
 import KpiCard from './kpi-card.jsx';
-
-import { Text } from '@chakra-ui/react';
-
-// Thin wrapper around the shared KPI card. Layout (Card container, grid)
-// is handled by the Dashboard and Card components.
+import { Text, HStack, Image } from '@chakra-ui/react';
 import chartSquare from '../../images/chart-square.svg';
 
 const KpiTakedowns = () => (
   <KpiCard
     title={
-      <Text fontSize="md" display="flex" alignItems="center" pb="20px">
-        <img
-          src={chartSquare}
-          alt=""
-          style={{ width: 20, height: 20, marginRight: 8, display: 'inline-block', verticalAlign: 'middle' }}
+      <HStack spacing={2} pb="20px">
+        <Image 
+          src={chartSquare} 
+          alt="" 
+          boxSize="20px"
+          filter="brightness(0) saturate(100%) invert(44%) sepia(7%) saturate(1190%) hue-rotate(180deg) brightness(99%) contrast(86%)"
         />
-        Number of Takedowns
-      </Text>
+        <Text fontSize="md" color="gray.500">Number of Takedowns</Text>
+      </HStack>
     }
     value={"593568"}
     numberFormat="en-US-u-nu-latn" // disables grouping (no comma)

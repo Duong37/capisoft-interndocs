@@ -42,7 +42,7 @@ const Users = () => {
             flex="none"
           >
             <Input
-              placeholder="Search"
+              placeholder="  Search"
               bg="white"
               borderRadius="8px"
               borderWidth="0"
@@ -68,7 +68,7 @@ const Users = () => {
               />
             </Box>
           </Box>
-          <HStack spacing={3}>
+          <HStack spacing={3} ml="40px">
             <Box w="40px" h="40px" borderRadius="full" bg="gray.300" overflow="hidden">
               <img
                 src={adminLogoTopRight}

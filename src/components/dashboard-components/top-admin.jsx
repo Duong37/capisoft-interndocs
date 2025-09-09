@@ -25,8 +25,8 @@ const defaultAdmin = {
 const NoticesReviewedPill = ({ value }) => (
   <Box bg="gray.100" borderRadius="xl" px={6} py={4} w="full">
     <StatRoot>
-      <HStack justify="space-between" align="center" w="full" flexWrap="nowrap" gap={6}>
-        <StatLabel color="gray.600" whiteSpace="nowrap" fontWeight={500}>
+      <HStack justify="space-between" align="center" w="full" flexWrap="nowrap" gap={3}>
+        <StatLabel color="gray.500" whiteSpace="nowrap" fontWeight={500}>
           Notices Reviewed:
         </StatLabel>
         <StatValueText as="span" whiteSpace="nowrap" fontSize="xl" fontWeight="bold">
@@ -44,7 +44,7 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
       <Text fontWeight="semibold" fontSize="xl">
         Top Admin
       </Text>
-      <Button size="sm" variant="ghost">
+      <Button size="m" variant="ghost">
         View all
       </Button>
     </HStack>
@@ -87,9 +87,8 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
 
       {/* Right: stat pill then button */}
       <GridItem alignSelf="start" minW={0}>
-        <VStack spacing={5} align="stretch" w="full">
-          <NoticesReviewedPill value={admin.noticesReviewed} />
-
+        <VStack align="stretch" w="full">
+          <NoticesReviewedPill value={admin.noticesReviewed} mb={0} />
           <Button
             w="full"
             h="64px"
@@ -97,6 +96,8 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
             colorScheme="purple"
             bg="#6F6CF3"
             _hover={{ bg: "#5c59e0" }}
+            fontSize="xl"
+            fontWeight="bold"
           >
             View Details
           </Button>

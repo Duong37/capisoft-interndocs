@@ -57,7 +57,7 @@ const NavItem = ({ to, icon, children }) => {
 const Sidebar = () => {
   const { logout } = useAuth();
   return (
-    <Box w="220px" h="1024px" bg="white" opacity={1} borderRightWidth="1px" position="sticky" top={0}>
+    <Box w="220px" h="1024px" bg="white" opacity={1} position="sticky" top={0}>
       <Box position="relative" h="830px">
         <VStack align="stretch" spacing={3} px={4} pt={4} pb="80px">
           <Text
@@ -71,7 +71,7 @@ const Sidebar = () => {
             w="auto"
             maxW="172px"
             mt="24px"
-            ml="24px"
+            ml="10px"
             opacity={1}
             mb={2}
           >

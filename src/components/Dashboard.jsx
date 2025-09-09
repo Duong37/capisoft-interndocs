@@ -33,7 +33,7 @@ const Dashboard = () => {
         >
           Dashboard
         </Heading>
-        <HStack spacing="40px" align="center">
+        <HStack spacing={10} align="center">
           <Box
             position="relative"
             width="491px"
@@ -43,7 +43,8 @@ const Dashboard = () => {
             flex="none"
           >
             <Input
-              placeholder="Search"
+              placeholder="  Search"
+              fontSize="16px"
               bg="white"
               borderRadius="8px"
               borderWidth="0"
@@ -65,21 +66,46 @@ const Dashboard = () => {
               <img
                 src={searchNormalImage}
                 alt="Search"
-                style={{ width: 18, height: 18, display: 'inline-block' }}
+                style={{
+                  width: 18,
+                  height: 18,
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                  filter: 'invert(40%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(90%)'
+                }}
               />
+              
             </Box>
           </Box>
-          <HStack spacing={3}>
-            <Box w="40px" h="40px" borderRadius="full" bg="gray.300" overflow="hidden">
+          <HStack spacing={3} ml="40px">
+            <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
               <img
                 src={adminLogoTopRight}
                 alt="Admin Logo"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
               />
             </Box>
-            <VStack spacing="0px" align="start">
-              <Text fontWeight={600} lineHeight="1">John Smith</Text>
-              <Text color="gray.500" fontSize="sm" lineHeight="1">Admin</Text>
+            <VStack align="start" spacing="-2px">
+              <Text
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontWeight={500}
+                fontStyle="medium"
+                fontSize="18px"
+                lineHeight="100%"
+                letterSpacing="0"
+              >
+                John Smith
+              </Text>
+              <Text
+                color="gray.500"
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontStyle="medium"
+                fontSize="14px"
+                lineHeight="100%"
+                letterSpacing="0"
+              >
+                Admin
+              </Text>
             </VStack>
           </HStack>
         </HStack>
@@ -93,7 +119,7 @@ const Dashboard = () => {
         mb="24px"
       >
         <Text
-          color="black"
+          color="gray.500"
           fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
           fontWeight={500}
           fontStyle="normal"
@@ -105,7 +131,17 @@ const Dashboard = () => {
         </Text>
 
         <HStack spacing={3}>
-          <Text color="gray.600">Choose Platform :</Text>
+          <Text
+            color="gray.600"
+            fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+            fontWeight={500}
+            fontStyle="normal"
+            fontSize="12px"
+            lineHeight="160%"
+            letterSpacing="0"
+          >
+            Choose Platform :
+          </Text>
           <Button
             size="sm"
             height="36px"

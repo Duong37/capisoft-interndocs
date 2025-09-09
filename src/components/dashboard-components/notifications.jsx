@@ -28,21 +28,26 @@ const NotificationsList = ({ items = defaultNotifications }) => (
   <>
     <HStack justify="space-between" mb={2}>
       <Text fontWeight="semibold">Notifications of Take Downs</Text>
-      <Button size="sm" variant="ghost" color="gray.600">View all</Button>
+      <Button size="m" variant="ghost" color="gray.600">View all</Button>
     </HStack>
     <VStack align="stretch" spacing={0}>
       {items.map((n, idx) => (
-        <Box key={idx} py={3}>
-          <HStack justify="space-between" align="start">
-            <Box>
-              <Text>{n.title}</Text>
-              <Link href={n.url} color="gray.500" fontSize="sm" isExternal>
-                {n.url}
-              </Link>
-            </Box>
-            <Text color="gray.500" whiteSpace="nowrap">{n.time}</Text>
-          </HStack>
-        </Box>
+        <React.Fragment key={idx}>
+          {idx !== 0 && (
+            <Box borderTop="1px solid" borderColor="gray.200" />
+          )}
+          <Box py={3}>
+            <HStack justify="space-between" align="start">
+              <HStack align="center" spacing={2}>
+                <Text>{n.title}</Text>
+                <Link href={n.url} color="gray.500" fontSize="sm" isExternal>
+                  {n.url}
+                </Link>
+              </HStack>
+              <Text color="gray.500" whiteSpace="nowrap">{n.time}</Text>
+            </HStack>
+          </Box>
+        </React.Fragment>
       ))}
     </VStack>
   </>

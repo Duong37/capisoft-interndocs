@@ -21,7 +21,7 @@ const FakeSellers = ({ sellers = defaultSellers }) => (
       <Text fontWeight="semibold" fontSize="lg" color="gray.700" letterSpacing="wide">
         Top 5 Fake Sellers
       </Text>
-      <Button size="sm" variant="ghost" color="gray.600">
+      <Button size="m" variant="ghost" color="gray.600">
         View all
       </Button>
     </HStack>
@@ -29,18 +29,19 @@ const FakeSellers = ({ sellers = defaultSellers }) => (
       {sellers.map((s, i) => (
         <HStack key={i} justify="space-between" py={2}>
           <HStack>
-            <Image src={s.img} alt="" boxSize="28px" />
+            <Image src={s.img} alt="" />
             <Box>
               <Text fontWeight="medium" fontSize="md" color="gray.800">
                 {s.name}
               </Text>
-              <Text color="gray.500" fontSize="sm" fontStyle="italic">
+              <Text color="gray.500" fontSize="sm">
                 {s.company}
               </Text>
             </Box>
           </HStack>
-          <Text color="gray.600" fontWeight="semibold" fontSize="sm" bg="gray.50" px={3} py={1} borderRadius="md">
-            Listing {s.listing}
+          <Text fontWeight="semibold" fontSize="sm" px={3} py={1} borderRadius="md" color="gray.500">
+            Listing{' '}
+            {s.listing}
           </Text>
         </HStack>
       ))}

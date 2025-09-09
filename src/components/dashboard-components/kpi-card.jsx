@@ -66,7 +66,7 @@ const KpiCard = ({
 
       {/* Right side: sparkline */}
       {sparkline ? (
-        <Box w="220px" h="84px" overflow="hidden" flexShrink={0}>
+        <Box w="155px" h="87px" overflow="visible" flexShrink={0} ml="60px" mt="32px">
           {sparkline}
         </Box>
       ) : null}
