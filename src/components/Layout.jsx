@@ -19,7 +19,7 @@ const pillProps = {
   outline: "none",
   transition: "background 120ms ease, color 120ms ease",
   _focusVisible: { boxShadow: "none", outline: "none" },
-  _hover: { bg: "brand.500", color: "white" },
+  _hover: { bg: "#6F6CF3", color: "white" },
 };
 
 const NavItem = ({ to, icon, children }) => {
@@ -32,7 +32,7 @@ const NavItem = ({ to, icon, children }) => {
       display="flex"
       alignItems="center"
       mx="auto"
-      bg={active ? "brand.500" : "transparent"}
+      bg={active ? "#6F6CF3" : "transparent"}
       color={active ? "white" : "gray.800"}
       {...pillProps}
       css={{
@@ -70,7 +70,7 @@ const Sidebar = () => {
             whiteSpace="nowrap"
             w="auto"
             maxW="172px"
-            mt="40px"
+            mt="24px"
             ml="24px"
             opacity={1}
             mb={2}

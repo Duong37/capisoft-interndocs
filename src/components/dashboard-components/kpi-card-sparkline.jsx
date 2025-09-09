@@ -12,9 +12,9 @@ const KpiCardSparkline = () => (
         <Text fontSize="md" color="gray.600">New Notices</Text>
       </HStack>
     }
-    value={2935}
+    value={"2935"}
     subtext={<Text fontSize="sm" color="gray.500">October 2023</Text>}
-    sparkline={<Image src={graphImg} alt="Sparkline" w="full" h="full" objectFit="contain" />}
+    sparkline={<Image src={graphImg} alt="Sparkline" w="full" h="full" objectFit="contain" objectPosition="bottom right" />}
     sparklineWidth={220}
     sparklineHeight={84}
     sparklineBottomOffset={8}
