@@ -108,7 +108,7 @@ const Sidebar = () => {
 const Layout = () => (
   <HStack align="start" spacing={0} minH="100vh">
     <Sidebar />
-    <Box flex="1" bg="gray.50" minH="100vh" px="24px" pt="24px">
+    <Box flex="1" bg="gray.50" minH="100vh" px={4} pt={4}>
       <Outlet />
     </Box>
   </HStack>

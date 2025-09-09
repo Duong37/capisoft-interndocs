@@ -11,8 +11,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
-import { users } from '../data/users';
-const UserCard = ({ u }) => (
+import { products } from '../data/products';
+
+// Card component to display product information
+const ProductCard = ({ product }) => (
   <Box
     bg="white"
     borderRadius="24px"
@@ -24,11 +26,23 @@ const UserCard = ({ u }) => (
     boxShadow="none"
   >
     <Box position="relative" borderRadius="lg" overflow="hidden" mb="12px">
-      <Box w="full" h="229px" bg="gray.100" borderRadius="16px" />
+      <Box w="full" h="229px" borderRadius="16px" overflow="hidden" bg="gray.100">
+        <img
+          src={require('../images/product.jpg')}
+          alt={product.name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '16px',
+            display: 'block'
+          }}
+        />
+      </Box>
     </Box>
     <VStack align="start" spacing={1}>
-      <Text fontWeight="medium">{u.name}</Text>
-      <Text color="gray.500" fontSize="sm">{u.email}</Text>
+      <Text fontWeight="medium">{product.name}</Text>
+      <Text color="gray.500" fontSize="sm">{product.url}</Text>
     </VStack>
     <HStack mt="16px" w="full" h="34px" align="center" justify="space-between">
       <Button
@@ -57,8 +71,10 @@ const UserCard = ({ u }) => (
   </Box>
 );
 
+// Reviews component to display a list of users
 const Reviews = () => {
   const { isAuthenticated } = useAuth();
+  // If the user is not authenticated, do not render the component
   if (!isAuthenticated) return null;
 
   return (
@@ -85,12 +101,13 @@ const Reviews = () => {
         lineHeight="160%"
         letterSpacing="0"
       >
-        User List
+        Product List
       </Text>
       <Grid templateColumns="repeat(auto-fit, minmax(275px, 1fr))" gap="24px" justifyContent="start">
-        {users.map((u) => (
-          <GridItem key={u.id}>
-            <UserCard u={u} />
+        {/* Map through the products and render a UserCard for each user */}
+        {products.map((product) => (
+          <GridItem key={product.id}>
+            <ProductCard product={product} />
           </GridItem>
         ))}
       </Grid>

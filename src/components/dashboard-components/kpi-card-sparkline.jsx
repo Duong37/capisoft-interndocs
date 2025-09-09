@@ -1,0 +1,26 @@
+import React from 'react';
+import { HStack, Image, Text } from '@chakra-ui/react';
+import KpiCard from './kpi-card.jsx';
+import graphImg from '../../images/Graph.svg';
+import messageNotifImg from '../../images/message-notif.svg';
+
+const KpiCardSparkline = () => (
+  <KpiCard
+    title={
+      <HStack spacing={2} pb="20px">
+        <Image src={messageNotifImg} alt="" boxSize="24px" />
+        <Text fontSize="md" color="gray.600">New Notices</Text>
+      </HStack>
+    }
+    value={2935}
+    subtext={<Text fontSize="sm" color="gray.500">October 2023</Text>}
+    sparkline={<Image src={graphImg} alt="Sparkline" w="full" h="full" objectFit="contain" />}
+    sparklineWidth={220}
+    sparklineHeight={84}
+    sparklineBottomOffset={8}
+    sparklineTopOffset={-2}
+    minHeight={180}
+  />
+);
+
+export default KpiCardSparkline;

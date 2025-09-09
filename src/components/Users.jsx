@@ -54,7 +54,19 @@ const Users = () => {
           >
             <HStack w="full" justify="space-between" align="center">
               <HStack spacing="16px" align="center" flex="1">
-                <Box w="56px" h="56px" borderRadius="12px" bg="gray.200" />
+                <Box w="56px" h="56px" borderRadius="12px" bg="gray.200" overflow="hidden" display="flex" alignItems="center" justifyContent="center">
+                  <img
+                    src={require('../images/cat.png')}
+                    alt="User avatar"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '12px',
+                      display: 'block'
+                    }}
+                  />
+                </Box>
                 <Stack spacing={0}>
                   <Text fontWeight="semibold">{u.name}</Text>
                   <Text fontSize="sm" color="gray.500">{u.email}</Text>

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 // RequireGuest
 // - Guards public-only routes such as /login
 // - If the user IS authenticated already, sends them to the app home
-//   (dashboard), preventing access to auth pages
+
 const RequireGuest = () => {
   const { isAuthenticated } = useAuth();
   if (isAuthenticated) {
