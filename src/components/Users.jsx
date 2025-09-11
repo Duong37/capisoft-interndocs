@@ -166,15 +166,15 @@ const Users = () => {
             h={{ base: 'auto', md: '100px' }}
             bg="white"
             borderRadius="16px"
-            px={{ base: '16px', md: '24px' }}
-            py={{ base: 12, md: 0 }}
+            px="16px"
+            py="16px"
             overflow="hidden"
             display={{ base: 'block', md: 'flex' }}
             alignItems={{ base: 'stretch', md: 'center' }}
             mb={idx !== users.length - 1 ? '16px' : 0}
           >
             <Stack w="full" direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ base: 'stretch', md: 'center' }} spacing={{ base: 12, md: 0 }}>
-              <HStack align="center" flex="1" ml="-8px">
+              <HStack align="center" flex="1">
                 <Box w="68px" h="68px" borderRadius="12px" bg="gray.200" overflow="hidden" display="flex" alignItems="center" justifyContent="center">
                   <img
                     src={userImage}
