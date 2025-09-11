@@ -147,7 +147,9 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
           </Button>
         </VStack>
       </GridItem>
-    </Grid>
+  </Grid>
+  {/* Extra bottom whitespace to balance the card visually */}
+  <Box pb={4} />
   </>
 );
 

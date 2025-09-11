@@ -14,6 +14,7 @@ import {
 import { users } from '../data/users';
 import searchNormalImage from '../images/search-normal.svg';
 import adminLogoTopRight from '../images/Ellipse-816.svg';
+import userImage from '../images/cat.png'
 
 const Users = () => {
   const [viewMode, setViewMode] = useState('grid');
@@ -161,19 +162,22 @@ const Users = () => {
         {users.map((u, idx) => (
           <Box
             key={u.id}
-            h="100px"
+            // Let the row grow on mobile so buttons can wrap below
+            h={{ base: 'auto', md: '100px' }}
             bg="white"
             borderRadius="16px"
-            px="16px"
-            display="flex"
-            alignItems="center"
+            px={{ base: '16px', md: '24px' }}
+            py={{ base: 12, md: 0 }}
+            overflow="hidden"
+            display={{ base: 'block', md: 'flex' }}
+            alignItems={{ base: 'stretch', md: 'center' }}
             mb={idx !== users.length - 1 ? '16px' : 0}
           >
-            <HStack w="full" justify="space-between" align="center">
-              <HStack spacing="16px" align="center" flex="1">
+            <Stack w="full" direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ base: 'stretch', md: 'center' }} spacing={{ base: 12, md: 0 }}>
+              <HStack align="center" flex="1" ml="-8px">
                 <Box w="68px" h="68px" borderRadius="12px" bg="gray.200" overflow="hidden" display="flex" alignItems="center" justifyContent="center">
                   <img
-                    src={require('../images/cat.png')}
+                    src={userImage}
                     alt="User avatar"
                     style={{
                       width: '100%',
@@ -201,15 +205,16 @@ const Users = () => {
                   {u.status === 'Online' ? 'Online' : 'Offline'}
                 </Badge>
               </HStack>
-              <HStack spacing="16px" align="center">
-                <Button h="54px" w="101px" px="12px" borderRadius="8px" bg="#161819" color="white" _hover={{ bg: '#0f1011' }}>
+              {/* Buttons: stack below on mobile */}
+              <Stack direction={{ base: 'column', md: 'row' }} spacing={{ base: 3, md: 16 }} align={{ base: 'stretch', md: 'center' }} w={{ base: 'full', md: 'auto' }}>
+                <Button h={{ base: '44px', md: '54px' }} w={{ base: 'full', md: '101px' }} px="12px" borderRadius="8px" bg="#161819" color="white" _hover={{ bg: '#0f1011' }}>
                   Source
                 </Button>
-                <Button h="54px" w="160px" px="12px" borderRadius="8px" bg="#6F6CF3" color="white" _hover={{ bg: '#5c59e0' }} ml="8px">
+                <Button h={{ base: '44px', md: '54px' }} w={{ base: 'full', md: '160px' }} px="12px" borderRadius="8px" bg="#6F6CF3" color="white" _hover={{ bg: '#5c59e0' }} ml={{ base: 0, md: '8px' }}>
                   View Details
                 </Button>
-              </HStack>
-            </HStack>
+              </Stack>
+            </Stack>
           </Box>
         ))}
       </VStack>
