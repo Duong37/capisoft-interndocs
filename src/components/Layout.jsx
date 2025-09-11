@@ -157,7 +157,7 @@ const Layout = () => {
         </Box>
       )}
       
-      <HStack align="start" spacing={0} minH="100vh">
+      <Box display="flex" flexDirection={{ base: "column", md: "row" }} align="start" minH="100vh">
         {/* Desktop Sidebar */}
         {!isMobile && (
           <Box position="fixed" top={0} left={0} zIndex={10}>
@@ -185,15 +185,18 @@ const Layout = () => {
           flex="1" 
           bg="gray.100" 
           minH="100vh" 
-          pl={{ base: 2, md: 6 }} 
+          w="full"
+          maxW="100%"
+          pl={{ base: 2, lg: 6 }} 
           pr={{ base: 2, md: 6 }}
           pt={{ base: 16, md: 4 }}
           ml={{ base: 0, md: "220px" }}
           transition="margin-left 0.2s"
+          overflow="hidden"
         >
           <Outlet />
         </Box>
-      </HStack>
+      </Box>
     </Box>
   );
 };

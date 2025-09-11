@@ -25,7 +25,7 @@ const defaultAdmin = {
 const NoticesReviewedPill = ({ value }) => (
   <Box bg="gray.100" borderRadius="xl" px={3} py={3} w="full" minW={0} maxW="100%" overflow="hidden">
     <StatRoot>
-      <HStack justify="space-between" align="center" w="full" flexWrap="nowrap" spacing={1} minW={0}>
+      <HStack justify="center" align="center" w="full" flexWrap="nowrap" spacing={1} minW={0}>
         <StatLabel 
           color="gray.500" 
           whiteSpace="nowrap" 
