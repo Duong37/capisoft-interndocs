@@ -10,19 +10,30 @@ const KpiCardSparkline = () => (
       <HStack spacing={2} pb="20px">
         <Image 
           src={messageNotifImg} 
-          alt="" 
-          boxSize="24px"
-          filter="brightness(0) saturate(100%) invert(44%) sepia(7%) saturate(1190%) hue-rotate(180deg) brightness(99%) contrast(86%)"
+          alt="New Notices"
+          boxSize={6}
+          // filter="grayscale"
+          opacity={0.8}
         />
         <Text fontSize="md" color="gray.500">New Notices</Text>
       </HStack>
     }
     value={"2935"}
     subtext={<Text fontSize="sm" color="gray.500">October 2023</Text>}
-    sparkline={<Image src={graphImg} alt="Sparkline" w="full" h="full" objectFit="contain" objectPosition="bottom right" />}
+    sparkline={
+      <Image
+        src={graphImg}
+        alt="Sparkline"
+        w="full"
+        h="full"
+        objectFit="contain"
+        objectPosition="bottom right"
+        pb={2}
+      />
+    }
     sparklineWidth={220}
     sparklineHeight={84}
-    sparklineBottomOffset={0}
+    sparklineBottomOffset={20}
     sparklineTopOffset={0}
     minHeight={180}
   />

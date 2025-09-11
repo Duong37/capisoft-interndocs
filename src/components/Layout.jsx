@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, VStack, Link, Text, HStack, Button, Image } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, VStack, Link, Text, HStack, Button, Image, IconButton, useBreakpointValue, Drawer } from "@chakra-ui/react";
 import { Link as RouterLink, useMatch, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logoutPng from "../images/logout.png";
@@ -17,9 +17,9 @@ const pillProps = {
   borderColor: "transparent",
   boxShadow: "none",
   outline: "none",
-  transition: "background 120ms ease, color 120ms ease",
-  _focusVisible: { boxShadow: "none", outline: "none" },
-  _hover: { bg: "#6F6CF3", color: "white" },
+  transition: "background 120ms ease, color 120ms ease, font-weight 120ms ease",
+  _focusVisible: { boxShadow: "none", outline: "none", fontWeight: "bold" },
+  _hover: { bg: "#6F6CF3", color: "white", fontWeight: "bold" }
 };
 
 const NavItem = ({ to, icon, children }) => {
@@ -34,6 +34,7 @@ const NavItem = ({ to, icon, children }) => {
       mx="auto"
       bg={active ? "#6F6CF3" : "transparent"}
       color={active ? "white" : "gray.800"}
+      fontWeight={active ? "bold" : pillProps.fontWeight || "normal"}
       {...pillProps}
       css={{
         '&:focus-visible': { boxShadow: 'none', outline: 'none' },
@@ -54,10 +55,34 @@ const NavItem = ({ to, icon, children }) => {
   );
 };
 
-const Sidebar = () => {
+// Lightweight inline icons to avoid @chakra-ui/icons v2/v3 mismatch
+const HamburgerSvg = (props) => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
+  </svg>
+);
+const CloseSvg = (props) => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4z" />
+  </svg>
+);
+
+const SidebarContent = ({ onClose }) => {
   const { logout } = useAuth();
   return (
-    <Box w="220px" h="1024px" bg="white" opacity={1} position="sticky" top={0}>
+    <Box w="220px" h="100vh" bg="white" opacity={1} position="relative">
+      {/* Close button for mobile */}
+      <IconButton
+        display={{ base: 'flex', lg: 'none' }}
+        onClick={onClose}
+        icon={<Box as={CloseSvg} boxSize={4} />}
+        variant="ghost"
+        position="absolute"
+        top={4}
+        right={4}
+        size="sm"
+      />
+      
       <Box position="relative" h="830px">
         <VStack align="stretch" spacing={3} px={4} pt={4} pb="80px">
           <Text
@@ -105,13 +130,65 @@ const Sidebar = () => {
 };
 
 // Layout wraps all authenticated pages and renders their content via <Outlet />.
-const Layout = () => (
-  <HStack align="start" spacing={0} minH="100vh">
-    <Sidebar />
-    <Box flex="1" bg="gray.50" minH="100vh" px={4} pt={4}>
-      <Outlet />
+const Layout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  
+  return (
+    <Box minH="100vh" bg="gray.100">
+      {/* Mobile hamburger menu */}
+      {isMobile && (
+        <Box position="fixed" top={4} left={4} zIndex={20}>
+          <IconButton
+            onClick={() => setIsSidebarOpen(true)}
+            icon={<Box as={HamburgerSvg} boxSize={5} />}
+            variant="solid"
+            bg="white"
+            color="gray.800"
+            size="md"
+            boxShadow="md"
+          />
+        </Box>
+      )}
+      
+      <HStack align="start" spacing={0} minH="100vh">
+        {/* Desktop Sidebar */}
+        {!isMobile && (
+          <Box position="fixed" top={0} left={0} zIndex={10}>
+            <SidebarContent />
+          </Box>
+        )}
+        
+        {/* Mobile Drawer Sidebar */}
+        <Drawer.Root
+          open={Boolean(isSidebarOpen && isMobile)}
+          onOpenChange={(e) => setIsSidebarOpen(e.open)}
+          placement="left"
+        >
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content>
+              <Drawer.CloseTrigger />
+              <SidebarContent onClose={() => setIsSidebarOpen(false)} />
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Drawer.Root>
+        
+        {/* Main Content */}
+        <Box 
+          flex="1" 
+          bg="gray.100" 
+          minH="100vh" 
+          px={{ base: 2, md: 4 }} 
+          pt={{ base: 16, lg: 4 }}
+          ml={{ base: 0, lg: "220px" }}
+          transition="margin-left 0.2s"
+        >
+          <Outlet />
+        </Box>
+      </HStack>
     </Box>
-  </HStack>
-);
+  );
+};
 
 export default Layout;

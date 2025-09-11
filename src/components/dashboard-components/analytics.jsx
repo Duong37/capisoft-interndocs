@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, HStack, Text, useToken } from '@chakra-ui/react';
+import { Box, HStack, Text } from '@chakra-ui/react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -40,50 +40,72 @@ const AnalyticsChart = ({ data = defaultData }) => {
   const numberFmt = new Intl.NumberFormat('en-US');
 
   // Resolve Chakra tokens to hex for Recharts
-  const [tickColor] = useToken('colors', [
-    'blue.200',
-    'green.200',
-    'pink.200',
-    'blackAlpha.600',
-  ]);
+  // const [tickColor] = useToken('colors', [
+  //   'blue.200',
+  //   'green.200',
+  //   '#FEA4A3',
+  //   'blackAlpha.600',
+  // ]);
 
   return (
     <>
       <HStack justify="space-between" align="center" mb={2}>
-        <Text fontSize="lg" fontWeight="medium">
+        <Text
+          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+          fontWeight={500}
+          fontStyle="normal"
+          fontSize="18px"
+          lineHeight="160%"
+          letterSpacing="0"
+        >
           Analytics
         </Text>
 
-        <HStack spacing={6} color="gray.800">
-          <LegendItem colorToken="blue.200" label="Listings Removed" />
-          <LegendItem colorToken="green.200" label="Notices Sent" />
-          <LegendItem colorToken="pink.200" label="Notices Rejected" />
+        <HStack gap={6} color="gray.800">
+          <LegendItem colorToken="#D7F0FC" label="Listings Removed" />
+          <LegendItem colorToken="#CDEFD9" label="Notices Sent" />
+          <LegendItem colorToken="#FEA4A3" label="Notices Rejected" />
         </HStack>
       </HStack>
 
-      <Box w="100%" h="346px">
+      <Box w="100%" h="266px" overflow="visible">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+            margin={{ top: 24, right: 10, left: 4, bottom: 0 }}
             barGap={4}
-            barCategoryGap={30}
+            barCategoryGap={26}
           >
             <CartesianGrid strokeDasharray="8 8" vertical={false} stroke="#E5E7EB" />
-            <XAxis dataKey="month" axisLine={{ stroke: "#E5E7EB" }} tick={{ fill: "#6B7280", fontSize: 12, fontWeight: 400 }} tickLine={false} />
+            <XAxis
+              dataKey="month"
+              axisLine={{ stroke: '#E5E7EB' }}
+              tick={{ fill: "#6B7280", fontSize: 12, fontWeight: 400 }}
+              tickLine={false}
+              padding={{ left: -17, right: -19}}
+              interval={0}
+            />
             <YAxis
-              // leave width undefined or set to something wider (e.g. 56)
               allowDecimals={false}
               domain={[0, 6000]}
               ticks={[0, 1000, 2000, 3000, 4000, 5000, 6000]}
               tickFormatter={(v) => numberFmt.format(v)}
-              tickMargin={8}
+              tickMargin={16}
               tick={{
                 fill: "#6B7280",
-                fontSize: 12,
+                fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
                 fontWeight: 400,
-                textAnchor: 'end',
+                fontStyle: "normal",
+                fontSize: 12,
+                opacity: 0.8,
+                lineHeight: "160%",
+                letterSpacing: "0",
+                textAnchor: "end",
+                textAlign: "right",
               }}
+              axisLine={false}
+              tickLine={false}
+              // width={80}
             />
             <Tooltip />
             <Bar

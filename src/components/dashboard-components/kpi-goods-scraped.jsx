@@ -11,7 +11,7 @@ const KpiGoodsScraped = () => (
           src={coinImg} 
           alt="" 
           boxSize="20px"
-          filter="brightness(0) saturate(100%) invert(44%) sepia(7%) saturate(1190%) hue-rotate(180deg) brightness(99%) contrast(86%)"
+          style={{ filter: "grayscale(100%) brightness(0.6)" }}
         />
         <Text fontSize="md" color="gray.500">% of Goods Scraped</Text>
       </HStack>

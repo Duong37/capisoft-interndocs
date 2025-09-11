@@ -82,17 +82,18 @@ const Reviews = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Container maxW="full" py={6} px={0}>
+    <Box minH="100vh" bg="gray.100">
+      <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
       {/* Top bar: heading, search field, admin profile (mock) */}
       <HStack w="full" mb="48px" align="center" justify="space-between">
         <Heading
           fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
           fontWeight={600}
           fontStyle="normal"
-          fontSize="32px"
+          fontSize={{ base: "24px", md: "32px" }}
           lineHeight="160%"
           letterSpacing="0"
+          textAlign={{ base: "center", md: "left" }}
         >
           Reviews
         </Heading>
@@ -190,7 +191,7 @@ const Reviews = () => {
           </Button>
         </HStack>
       </HStack>
-      <Grid templateColumns="repeat(auto-fit, minmax(275px, 1fr))" gap="24px" justifyContent="start">
+      <Grid templateColumns={{ base: "1fr", sm: "repeat(auto-fit, minmax(275px, 1fr))" }} gap={{ base: 4, md: 6 }} justifyContent="start">
         {/* Map through the products and render a UserCard for each user */}
         {products.map((product) => (
           <GridItem key={product.id}>

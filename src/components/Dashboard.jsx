@@ -19,29 +19,31 @@ const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState('All');
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Container maxW="full" py={6} px={0}>
+    <Box minH="100vh" bg="gray.100">
+      <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
       {/* Top bar: heading, search field, admin profile (mock) */}
-      <HStack w="full" mb="48px" align="center" justify="space-between">
-        <Heading
-          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-          fontWeight={600}
-          fontStyle="normal"
-          fontSize="32px"
-          lineHeight="160%"
-          letterSpacing="0"
-        >
-          Dashboard
-        </Heading>
-        <HStack spacing={10} align="center">
-          <Box
-            position="relative"
-            width="491px"
-            height="50px"
-            borderRadius="8px"
-            opacity={1}
-            flex="none"
+      <VStack w="full" mb={{ base: 6, md: 12 }} align="stretch" spacing={{ base: 4, md: 0 }}>
+        <HStack w="full" align="center" justify={{ base: "center", md: "space-between" }}>
+          <Heading
+            fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+            fontWeight={600}
+            fontStyle="normal"
+            fontSize={{ base: "24px", md: "32px" }}
+            lineHeight="160%"
+            letterSpacing="0"
+            textAlign={{ base: "center", md: "left" }}
           >
+            Dashboard
+          </Heading>
+          <HStack spacing={{ base: 4, md: 10 }} align="center" display={{ base: "none", md: "flex" }}>
+            <Box
+              position="relative"
+              width="491px"
+              height="50px"
+              borderRadius="8px"
+              opacity={1}
+              flex="none"
+            >
             <Input
               placeholder="  Search"
               fontSize="16px"
@@ -108,41 +110,124 @@ const Dashboard = () => {
               </Text>
             </VStack>
           </HStack>
+          </HStack>
         </HStack>
-      </HStack>
+        
+        {/* Mobile search and avatar */}
+        <VStack w="full" spacing={4} display={{ base: "flex", md: "none" }}>
+          <Box
+            position="relative"
+            width="100%"
+            maxW="400px"
+            height="50px"
+            borderRadius="8px"
+            opacity={1}
+          >
+            <Input
+              placeholder="  Search"
+              fontSize="16px"
+              bg="white"
+              borderRadius="8px"
+              borderWidth="0"
+              pr="44px"
+              h="50px"
+              w="100%"
+            />
+            <Box
+              position="absolute"
+              right="14px"
+              top="50%"
+              transform="translateY(-50%)"
+              pointerEvents="none"
+              color="gray.400"
+            >
+              <img
+                src={searchNormalImage}
+                alt="Search"
+                style={{
+                  width: 18,
+                  height: 18,
+                  display: 'inline-block',
+                  verticalAlign: 'middle',
+                  filter: 'invert(40%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(90%)'
+                }}
+              />
+            </Box>
+          </Box>
+          
+          <HStack spacing={3}>
+            <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
+              <img
+                src={adminLogoTopRight}
+                alt="Admin Logo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            </Box>
+            <VStack align="start" spacing="-2px">
+              <Text
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontWeight={500}
+                fontStyle="medium"
+                fontSize="18px"
+                lineHeight="100%"
+                letterSpacing="0"
+              >
+                John Smith
+              </Text>
+              <Text
+                color="gray.500"
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontStyle="medium"
+                fontSize="14px"
+                lineHeight="100%"
+                letterSpacing="0"
+              >
+                Admin
+              </Text>
+            </VStack>
+          </HStack>
+        </VStack>
+      </VStack>
 
       {/* Sub header: date + platform chips (visual only) */}
-      <HStack
+      <VStack
         w="full"
-        justify="space-between"
-        align="center"
-        mb="24px"
+        align="stretch"
+        mb={{ base: 4, md: 6 }}
+        spacing={{ base: 4, md: 0 }}
       >
-        <Text
-          color="gray.500"
-          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-          fontWeight={500}
-          fontStyle="normal"
-          fontSize="18px"
-          lineHeight="160%"
-          letterSpacing="0"
+        <HStack
+          w="full"
+          justify="space-between"
+          align="center"
+          flexDir={{ base: "column", md: "row" }}
+          spacing={{ base: 4, md: 0 }}
         >
-          Wed, Oct 27
-        </Text>
-
-        <HStack spacing={3}>
           <Text
-            color="gray.600"
+            color="black"
             fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
             fontWeight={500}
             fontStyle="normal"
-            fontSize="12px"
+            fontSize="18px"
             lineHeight="160%"
             letterSpacing="0"
           >
-            Choose Platform :
+            Wed, Oct 27
           </Text>
-          <Button
+
+          <HStack spacing={3}>
+            <Text
+              color="gray.600"
+              fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+              fontWeight={500}
+              fontStyle="normal"
+              fontSize="12px"
+              lineHeight="160%"
+              letterSpacing="0"
+            >
+              Choose Platform :
+            </Text>
+            <Button
             size="sm"
             height="36px"
             px="16px"
@@ -181,11 +266,12 @@ const Dashboard = () => {
           >
             All
           </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </VStack>
 
       {/* KPI Cards */}
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={6} mb={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: 4, md: 6 }} mb={{ base: 4, md: 6 }}>
         <GridItem colSpan={{ base: 12, md: 4 }}>
           <Card>
             <KpiTakedowns />
@@ -203,10 +289,10 @@ const Dashboard = () => {
         </GridItem>
       </Grid>
 
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: 4, md: 6 }}>
         {/* Analytics chart */}
         <GridItem colSpan={{ base: 12, md: 8 }}>
-          <Card w="100%" borderRadius="24px">
+          <Card pl={2} overflow="visible">
             <AnalyticsChart />
           </Card>
         </GridItem>

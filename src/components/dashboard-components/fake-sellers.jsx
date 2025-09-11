@@ -18,28 +18,46 @@ const defaultSellers = [
 const FakeSellers = ({ sellers = defaultSellers }) => (
   <>
     <HStack justify="space-between" mb={2}>
-      <Text fontWeight="semibold" fontSize="lg" color="gray.700" letterSpacing="wide">
+      <Text
+        fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        fontWeight={500}
+        fontStyle="normal"
+        fontSize="18px"
+        lineHeight="160%"
+        letterSpacing="0"
+        color="gray.700"
+      >
         Top 5 Fake Sellers
       </Text>
-      <Button size="m" variant="ghost" color="gray.600">
+      <Button size="m" variant="ghost">
         View all
       </Button>
     </HStack>
-    <VStack spacing={3} align="stretch">
+    <VStack align="stretch">
       {sellers.map((s, i) => (
-        <HStack key={i} justify="space-between" py={2}>
+        <HStack key={i} justify="space-between" py={1.5} pb={i === sellers.length - 1 ? 0 : 1.5}>
           <HStack>
             <Image src={s.img} alt="" />
             <Box>
-              <Text fontWeight="medium" fontSize="md" color="gray.800">
+              <Text fontWeight="medium" fontSize="12px" color="gray.800">
                 {s.name}
               </Text>
-              <Text color="gray.500" fontSize="sm">
+              <Text color="gray.500" fontSize="10px">
                 {s.company}
               </Text>
             </Box>
           </HStack>
-          <Text fontWeight="semibold" fontSize="sm" px={3} py={1} borderRadius="md" color="gray.500">
+          <Text
+            fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+            fontWeight={500}
+            fontStyle="medium"
+            fontSize="14px"
+            lineHeight="160%"
+            letterSpacing="0"
+            textAlign="right"
+            borderRadius="md"
+            color="gray.500"
+          >
             Listing{' '}
             {s.listing}
           </Text>

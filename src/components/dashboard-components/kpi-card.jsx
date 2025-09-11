@@ -9,7 +9,7 @@ const DeltaPill = ({ value }) => (
     borderRadius="full"
     px={2.5}
     py={1}
-    fontSize="xs"
+    fontSize= "10px"
     fontWeight="semibold"
     display="inline-flex"
     alignItems="center"

@@ -27,20 +27,39 @@ const defaultNotifications = [
 const NotificationsList = ({ items = defaultNotifications }) => (
   <>
     <HStack justify="space-between" mb={2}>
-      <Text fontWeight="semibold">Notifications of Take Downs</Text>
-      <Button size="m" variant="ghost" color="gray.600">View all</Button>
+      <Text
+        fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        fontWeight={500}
+        fontStyle="medium"
+        fontSize="18px"
+        lineHeight="160%"
+        letterSpacing="0"
+      >
+        Notifications of Take Downs
+      </Text>
+      <Button size="m" variant="ghost">View all</Button>
     </HStack>
+    <Box pb={2} /> {/* Add padding between HStack and VStack */}
     <VStack align="stretch" spacing={0}>
       {items.map((n, idx) => (
         <React.Fragment key={idx}>
           {idx !== 0 && (
-            <Box borderTop="1px solid" borderColor="gray.200" />
+            <Box borderTop="1px solid" borderColor="gray.100" />
           )}
-          <Box py={3}>
+          <Box py={1}>
             <HStack justify="space-between" align="start">
               <HStack align="center" spacing={2}>
-                <Text>{n.title}</Text>
-                <Link href={n.url} color="gray.500" fontSize="sm" isExternal>
+                <Text
+                  fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                  fontWeight={400}
+                  fontStyle="normal"
+                  fontSize="14px"
+                  lineHeight="160%"
+                  letterSpacing="0"
+                >
+                  {n.title}
+                </Text>
+                <Link color="gray.500" fontSize="sm" isExternal>
                   {n.url}
                 </Link>
               </HStack>

@@ -18,21 +18,22 @@ import adminLogoTopRight from '../images/Ellipse-816.svg';
 const Users = () => {
   const [viewMode, setViewMode] = useState('grid');
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Container maxW="full" px={0} py={6}>
+    <Box minH="100vh" bg="gray.100">
+      <Container maxW="full" px={0} py={{ base: 4, md: 6 }}>
       {/* Top bar: heading, search field, admin profile (mock) */}
       <HStack w="full" mb="48px" align="center" justify="space-between">
         <Heading
           fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
           fontWeight={600}
           fontStyle="normal"
-          fontSize="32px"
+          fontSize={{ base: "24px", md: "32px" }}
           lineHeight="160%"
           letterSpacing="0"
+          textAlign={{ base: "center", md: "left" }}
         >
           Users
         </Heading>
-        <HStack spacing="40px" align="center">
+        <HStack spacing="40px" align="center" display={{ base: "none", md: "flex" }}>
           <Box
             position="relative"
             width="491px"

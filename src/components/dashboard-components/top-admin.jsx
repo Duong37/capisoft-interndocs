@@ -23,13 +23,24 @@ const defaultAdmin = {
 };
 
 const NoticesReviewedPill = ({ value }) => (
-  <Box bg="gray.100" borderRadius="xl" px={6} py={4} w="full">
+  <Box bg="gray.100" borderRadius="xl" px={4} py={3} w="full">
     <StatRoot>
-      <HStack justify="space-between" align="center" w="full" flexWrap="nowrap" gap={3}>
-        <StatLabel color="gray.500" whiteSpace="nowrap" fontWeight={500}>
+      <HStack justify="flex-start" align="center" w="full" flexWrap="nowrap" gap={4}>
+        <StatLabel color="gray.500" whiteSpace="nowrap" fontWeight={500} fontSize="12px" mb="0">
           Notices Reviewed:
         </StatLabel>
-        <StatValueText as="span" whiteSpace="nowrap" fontSize="xl" fontWeight="bold">
+        <StatValueText
+          as="span"
+          whiteSpace="nowrap"
+          // fontFamily="Inter"
+          fontWeight={600}
+          fontStyle="Semi Bold"
+          fontSize="16px"
+          lineHeight="160%"
+          letterSpacing="0%"
+          textAlign="right"
+          ml={1}
+        >
           {Number(value).toLocaleString()}
         </StatValueText>
       </HStack>
@@ -41,14 +52,21 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
   <>
     {/* Header */}
     <HStack as="header" justify="space-between" mb={3}>
-      <Text fontWeight="semibold" fontSize="xl">
+      <Text
+        fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        fontWeight={500}
+        fontStyle="medium"
+        fontSize="18px"
+        lineHeight="160%"
+        letterSpacing="0"
+      >
         Top Admin
       </Text>
       <Button size="m" variant="ghost">
         View all
       </Button>
     </HStack>
-
+    <Box pb={4} /> {/* Add padding between header and grid */}
     <Grid
       templateColumns={{ base: '1fr', md: '90px 1fr' }}
       gap={{ base: 4, md: 5 }}
@@ -57,28 +75,25 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
     >
       {/* Left: avatar + name/role */}
       <GridItem minW="70px" maxW="100px">
-        <VStack spacing={1} align="center" w="full">
+        <VStack spacing={0} align="center" w="full" mt={-2}>
           {/* Avatar with outer ring */}
-          <Box p="1px" borderRadius="full" bg="whiteAlpha.900" display="inline-block">
-            <Box borderRadius="full" bg="gray.300">
-              <Avatar.Root boxSize="84px">
-                <Avatar.Image src={adminImageUrl} alt={admin.name} />
-                <Avatar.Fallback>
-                  {admin.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join('')}
-                </Avatar.Fallback>
-              </Avatar.Root>
-            </Box>
-          </Box>
+          <Avatar.Root boxSize="84px" mb={0.5}>
+            <Avatar.Image src={adminImageUrl}/>
+          </Avatar.Root>
 
-          <VStack spacing={0} align="center" w="full">
-            <Text fontWeight="semibold" fontSize="xs" textAlign="center" w="full">
+          <VStack spacing={0} align="center" w="full" mt={-1}>
+            <Text
+              fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+              fontWeight={500}
+              fontStyle="medium"
+              fontSize="12px"
+              lineHeight="100%"
+              textAlign="center"
+              w="full"
+            >
               {admin.name}
             </Text>
-            <Text color="gray.500" textAlign="center" fontSize="xs" w="full">
+            <Text color="gray.400" textAlign="center" fontSize="10px" w="full" lineHeight="100%">
               {admin.role}
             </Text>
           </VStack>
@@ -87,20 +102,22 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
 
       {/* Right: stat pill then button */}
       <GridItem alignSelf="start" minW={0}>
-        <VStack align="stretch" w="full">
-          <NoticesReviewedPill value={admin.noticesReviewed} mb={0} />
-          <Button
+        <VStack align="stretch" w="full" spacing={3}>
+          <NoticesReviewedPill value={admin.noticesReviewed} />
+          <Box pt={1}>
+            <Button
             w="full"
-            h="64px"
-            borderRadius="2xl"
+            h="46px"
+            borderRadius="xl"
             colorScheme="purple"
             bg="#6F6CF3"
             _hover={{ bg: "#5c59e0" }}
-            fontSize="xl"
+            fontSize="16px"
             fontWeight="bold"
           >
             View Details
           </Button>
+          </Box>
         </VStack>
       </GridItem>
     </Grid>
