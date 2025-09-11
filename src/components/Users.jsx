@@ -87,7 +87,24 @@ const Users = () => {
         </HStack>
       </HStack>
 
-      {/* Mobile search + profile */}
+      {/* Mobile admin profile - positioned in top right */}
+      <Box position="fixed" top={4} right={4} zIndex={15} display={{ base: "block", md: "none" }}>
+        <HStack spacing={2}>
+          <VStack align="end" spacing="0px">
+            <Text fontWeight={600} fontSize="sm" lineHeight="1" color="gray.800">John Smith</Text>
+            <Text color="gray.500" fontSize="xs" lineHeight="1">Admin</Text>
+          </VStack>
+          <Box w="32px" h="32px" borderRadius="full" bg="gray.300" overflow="hidden">
+            <img
+              src={adminLogoTopRight}
+              alt="Admin Logo"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+            />
+          </Box>
+        </HStack>
+      </Box>
+
+      {/* Mobile search */}
       <VStack w="full" spacing={4} display={{ base: "flex", md: "none" }} mb={6}>
         <Box position="relative" width="100%" maxW="400px" height="50px" borderRadius="8px" opacity={1}>
           <Input
@@ -104,15 +121,6 @@ const Users = () => {
             <img src={searchNormalImage} alt="Search" style={{ width: 18, height: 18, display: 'inline-block' }} />
           </Box>
         </Box>
-        <HStack spacing={3}>
-          <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
-            <img src={adminLogoTopRight} alt="Admin Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-          </Box>
-          <VStack align="start" spacing="-2px">
-            <Text fontWeight={500} fontSize="18px" lineHeight="100%">John Smith</Text>
-            <Text color="gray.500" fontSize="14px" lineHeight="100%">Admin</Text>
-          </VStack>
-        </HStack>
       </VStack>
       <HStack w="full" justify="space-between" align="center" mb="24px">
         <Text

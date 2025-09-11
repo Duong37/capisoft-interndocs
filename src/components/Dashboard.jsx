@@ -95,7 +95,24 @@ const Dashboard = () => {
           </HStack>
         </HStack>
         
-        {/* Mobile search and avatar */}
+        {/* Mobile admin profile - positioned in top right */}
+        <Box position="fixed" top={4} right={4} zIndex={15} display={{ base: "block", md: "none" }}>
+          <HStack spacing={2}>
+            <VStack align="end" spacing="0px">
+              <Text fontWeight={600} fontSize="sm" lineHeight="1" color="gray.800">John Smith</Text>
+              <Text color="gray.500" fontSize="xs" lineHeight="1">Admin</Text>
+            </VStack>
+            <Box w="32px" h="32px" borderRadius="full" bg="gray.300" overflow="hidden">
+              <img
+                src={adminLogoTopRight}
+                alt="Admin Logo"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            </Box>
+          </HStack>
+        </Box>
+        
+        {/* Mobile search */}
         <VStack w="full" spacing={4} display={{ base: "flex", md: "none" }}>
           <Box
             position="relative"
@@ -136,38 +153,6 @@ const Dashboard = () => {
               />
             </Box>
           </Box>
-          
-          <HStack spacing={3} ml="40px">
-            <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
-              <img
-                src={adminLogoTopRight}
-                alt="Admin Logo"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-              />
-            </Box>
-            <VStack align="start" spacing="-2px">
-              <Text
-                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-                fontWeight={500}
-                fontStyle="medium"
-                fontSize="18px"
-                lineHeight="100%"
-                letterSpacing="0"
-              >
-                John Smith
-              </Text>
-              <Text
-                color="gray.500"
-                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-                fontStyle="medium"
-                fontSize="14px"
-                lineHeight="100%"
-                letterSpacing="0"
-              >
-                Admin
-              </Text>
-            </VStack>
-          </HStack>
         </VStack>
       </VStack>
 
