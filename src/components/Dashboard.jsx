@@ -19,7 +19,7 @@ const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState('All');
 
   return (
-    <Box minH="100vh" bg="gray.100">
+    <Box>
       <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
       {/* Top bar: heading, search field, admin profile (mock) */}
       <VStack w="full" mb={{ base: 6, md: 12 }} align="stretch" spacing={{ base: 4, md: 0 }}>
@@ -200,7 +200,6 @@ const Dashboard = () => {
           w="full"
           justify="space-between"
           align="center"
-          flexDir={{ base: "column", md: "row" }}
           spacing={{ base: 4, md: 0 }}
         >
           <Text

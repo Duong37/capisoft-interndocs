@@ -18,7 +18,7 @@ import adminLogoTopRight from '../images/Ellipse-816.svg';
 const Users = () => {
   const [viewMode, setViewMode] = useState('grid');
   return (
-    <Box minH="100vh" bg="gray.100">
+    <Box>
       <Container maxW="full" px={0} py={{ base: 4, md: 6 }}>
       {/* Top bar: heading, search field, admin profile (mock) */}
       <HStack w="full" mb="48px" align="center" justify="space-between">

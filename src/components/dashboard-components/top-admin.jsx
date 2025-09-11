@@ -23,23 +23,32 @@ const defaultAdmin = {
 };
 
 const NoticesReviewedPill = ({ value }) => (
-  <Box bg="gray.100" borderRadius="xl" px={4} py={3} w="full">
+  <Box bg="gray.100" borderRadius="xl" px={3} py={3} w="full" minW={0} maxW="100%" overflow="hidden">
     <StatRoot>
-      <HStack justify="flex-start" align="center" w="full" flexWrap="nowrap" gap={4}>
-        <StatLabel color="gray.500" whiteSpace="nowrap" fontWeight={500} fontSize="12px" mb="0">
+      <HStack justify="space-between" align="center" w="full" flexWrap="nowrap" spacing={1} minW={0}>
+        <StatLabel 
+          color="gray.500" 
+          whiteSpace="nowrap" 
+          fontWeight={500} 
+          fontSize="12px" 
+          mb="0"
+          flexShrink={1}
+          overflow="hidden"
+          textOverflow="ellipsis"
+        >
           Notices Reviewed:
         </StatLabel>
         <StatValueText
           as="span"
           whiteSpace="nowrap"
-          // fontFamily="Inter"
           fontWeight={600}
           fontStyle="Semi Bold"
           fontSize="16px"
           lineHeight="160%"
           letterSpacing="0%"
           textAlign="right"
-          ml={1}
+          flexShrink={0}
+          minW={0}
         >
           {Number(value).toLocaleString()}
         </StatValueText>
@@ -68,20 +77,22 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
     </HStack>
     <Box pb={4} /> {/* Add padding between header and grid */}
     <Grid
-      templateColumns={{ base: '1fr', md: '90px 1fr' }}
+      templateColumns={{ base: '1fr', sm: '1fr', md: 'minmax(70px, 90px) minmax(0, 1fr)' }}
       gap={{ base: 4, md: 5 }}
       alignItems="start"
       w="full"
+      maxW="100%"
+      overflow="hidden"
     >
       {/* Left: avatar + name/role */}
-      <GridItem minW="70px" maxW="100px">
-        <VStack spacing={0} align="center" w="full" mt={-2}>
+      <GridItem minW="70px" maxW="100px" overflow="hidden">
+        <VStack spacing={0} align="center" w="full" mt={-2} maxW="100%">
           {/* Avatar with outer ring */}
-          <Avatar.Root boxSize="84px" mb={0.5}>
+          <Avatar.Root boxSize="84px" mb={0.5} flexShrink={0}>
             <Avatar.Image src={adminImageUrl}/>
           </Avatar.Root>
 
-          <VStack spacing={0} align="center" w="full" mt={-1}>
+          <VStack spacing={0} align="center" w="full" mt={-1} maxW="100%">
             <Text
               fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
               fontWeight={500}
@@ -90,10 +101,22 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
               lineHeight="100%"
               textAlign="center"
               w="full"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
             >
               {admin.name}
             </Text>
-            <Text color="gray.400" textAlign="center" fontSize="10px" w="full" lineHeight="100%">
+            <Text 
+              color="gray.400" 
+              textAlign="center" 
+              fontSize="10px" 
+              w="full" 
+              lineHeight="100%"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+            >
               {admin.role}
             </Text>
           </VStack>
@@ -101,11 +124,10 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
       </GridItem>
 
       {/* Right: stat pill then button */}
-      <GridItem alignSelf="start" minW={0}>
-        <VStack align="stretch" w="full" spacing={3}>
+      <GridItem alignSelf="start" minW={0} maxW="100%" overflow="hidden">
+        <VStack align="stretch" w="full" spacing={3} maxW="100%">
           <NoticesReviewedPill value={admin.noticesReviewed} />
-          <Box pt={1}>
-            <Button
+          <Button
             w="full"
             h="46px"
             borderRadius="xl"
@@ -114,10 +136,10 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
             _hover={{ bg: "#5c59e0" }}
             fontSize="16px"
             fontWeight="bold"
+            maxW="100%"
           >
             View Details
           </Button>
-          </Box>
         </VStack>
       </GridItem>
     </Grid>

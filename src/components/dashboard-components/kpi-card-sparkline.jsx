@@ -7,15 +7,16 @@ import messageNotifImg from '../../images/message-notif.svg';
 const KpiCardSparkline = () => (
   <KpiCard
     title={
-      <HStack spacing={2} pb="20px">
+      <HStack spacing={2} pb="20px" flexShrink={0} whiteSpace="nowrap">
         <Image 
           src={messageNotifImg} 
           alt="New Notices"
           boxSize={6}
           // filter="grayscale"
           opacity={0.8}
+          flexShrink={0}
         />
-        <Text fontSize="md" color="gray.500">New Notices</Text>
+        <Text fontSize="md" color="gray.500" whiteSpace="nowrap">New Notices</Text>
       </HStack>
     }
     value={"2935"}
@@ -24,18 +25,11 @@ const KpiCardSparkline = () => (
       <Image
         src={graphImg}
         alt="Sparkline"
-        w="full"
-        h="full"
+        width="155px"
+        height="88px"
         objectFit="contain"
-        objectPosition="bottom right"
-        pb={2}
       />
     }
-    sparklineWidth={220}
-    sparklineHeight={84}
-    sparklineBottomOffset={20}
-    sparklineTopOffset={0}
-    minHeight={180}
   />
 );
 

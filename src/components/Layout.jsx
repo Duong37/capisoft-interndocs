@@ -6,6 +6,7 @@ import logoutPng from "../images/logout.png";
 import homePng from "../images/home-2.png";
 import quoteDownSquarePng from "../images/quote-down-square.png";
 import userPng from "../images/user.png";
+import hamburgerPng from "../images/hamburger.png";
 
 const pillProps = {
   w: "180px",
@@ -56,10 +57,9 @@ const NavItem = ({ to, icon, children }) => {
 };
 
 // Lightweight inline icons to avoid @chakra-ui/icons v2/v3 mismatch
+
 const HamburgerSvg = (props) => (
-  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
-    <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
-  </svg>
+  <img src={hamburgerPng} alt="Open menu" style={{ width: "1.5em", height: "1.5em" }} {...props} />
 );
 const CloseSvg = (props) => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
@@ -73,7 +73,7 @@ const SidebarContent = ({ onClose }) => {
     <Box w="220px" h="100vh" bg="white" opacity={1} position="relative">
       {/* Close button for mobile */}
       <IconButton
-        display={{ base: 'flex', lg: 'none' }}
+        display={{ base: 'flex', md: 'none' }}
         onClick={onClose}
         icon={<Box as={CloseSvg} boxSize={4} />}
         variant="ghost"
@@ -132,7 +132,7 @@ const SidebarContent = ({ onClose }) => {
 // Layout wraps all authenticated pages and renders their content via <Outlet />.
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const isMobile = useBreakpointValue({ base: true, md: false });
   
   return (
     <Box minH="100vh" bg="gray.100">
@@ -144,9 +144,15 @@ const Layout = () => {
             icon={<Box as={HamburgerSvg} boxSize={5} />}
             variant="solid"
             bg="white"
-            color="gray.800"
+            color="gray.700"
             size="md"
-            boxShadow="md"
+            boxShadow="lg"
+            borderRadius="12px"
+            border="1px solid"
+            borderColor="gray.200"
+            _hover={{ bg: "gray.50", borderColor: "gray.300" }}
+            _active={{ bg: "gray.100" }}
+            p={3}
           />
         </Box>
       )}
@@ -179,9 +185,10 @@ const Layout = () => {
           flex="1" 
           bg="gray.100" 
           minH="100vh" 
-          px={{ base: 2, md: 4 }} 
-          pt={{ base: 16, lg: 4 }}
-          ml={{ base: 0, lg: "220px" }}
+          pl={{ base: 2, md: 6 }} 
+          pr={{ base: 2, md: 6 }}
+          pt={{ base: 16, md: 4 }}
+          ml={{ base: 0, md: "220px" }}
           transition="margin-left 0.2s"
         >
           <Outlet />

@@ -82,7 +82,7 @@ const Reviews = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <Box minH="100vh" bg="gray.100">
+    <Box>
       <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
       {/* Top bar: heading, search field, admin profile (mock) */}
       <HStack w="full" mb="48px" align="center" justify="space-between">
