@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 // Avatar image as URL (CRA and Vite default import returns a URL string)
-import adminImageUrl from "../../images/Ellipse-819.svg";
+import adminImage from "../../images/Ellipse-819.svg";
 
 const defaultAdmin = {
   name: "Carl Meadows",
@@ -82,15 +82,19 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
       alignItems="start"
       w="full"
       maxW="100%"
-      overflow="hidden"
+      overflow="visible"
     >
       {/* Left: avatar + name/role */}
-      <GridItem minW="70px" maxW="100px" overflow="hidden">
+      <GridItem minW="70px" maxW="100px" overflow="visible">
         <VStack spacing={0} align="center" w="full" mt={-2} maxW="100%">
-          {/* Avatar with outer ring */}
-          <Avatar.Root boxSize="84px" mb={0.5} flexShrink={0}>
-            <Avatar.Image src={adminImageUrl}/>
-          </Avatar.Root>
+          {/* Avatar image (SVG already circular with ring). Use plain img to avoid extra masking that crops it. */}
+          <Box boxSize="84px" mb={0.5} flexShrink={0}>
+            <img
+              src={adminImage}
+              alt="Admin avatar"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+            />
+          </Box>
 
           <VStack spacing={0} align="center" w="full" mt={-1} maxW="100%">
             <Text
@@ -124,7 +128,7 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
       </GridItem>
 
       {/* Right: stat pill then button */}
-      <GridItem alignSelf="start" minW={0} maxW="100%" overflow="hidden">
+      <GridItem alignSelf="start" minW={0} maxW="100%" overflow="visible">
         <VStack align="stretch" w="full" spacing={3} maxW="100%">
           <NoticesReviewedPill value={admin.noticesReviewed} />
           <Button
@@ -137,6 +141,7 @@ const TopAdminCard = ({ admin = defaultAdmin }) => (
             fontSize="16px"
             fontWeight="bold"
             maxW="100%"
+            mt={1}
           >
             View Details
           </Button>

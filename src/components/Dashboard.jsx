@@ -294,7 +294,7 @@ const Dashboard = () => {
 
         {/* Top Admin */}
         <GridItem colSpan={{ base: 12, md: 4 }}>
-          <Card>
+          <Card overflow="visible">
             <TopAdminCard />
           </Card>
         </GridItem>
