@@ -22,8 +22,8 @@ const Dashboard = () => {
     <Box>
       <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
       {/* Top bar: heading, search field, admin profile (mock) */}
-      <VStack w="full" mb={{ base: 6, md: 12 }} align="stretch" spacing={{ base: 4, md: 0 }}>
-        <HStack w="full" align="center" justify={{ base: "center", md: "space-between" }}>
+      <VStack w="full" mb={{ base: 6, md: 12 }} align="stretch" spacing={{ base: 0, md: 0 }}>
+        <HStack w="full" align="center" justify={{ base: "center", md: "space-between" }} mb={{ base: 4, md: 0 }}>
           <Heading
             fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
             fontWeight={600}
@@ -80,34 +80,16 @@ const Dashboard = () => {
             </Box>
           </Box>
           <HStack spacing={3} ml="40px">
-            <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
+            <Box w="40px" h="40px" borderRadius="full" bg="gray.300" overflow="hidden">
               <img
                 src={adminLogoTopRight}
                 alt="Admin Logo"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
               />
             </Box>
-            <VStack align="start" spacing="-2px">
-              <Text
-                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-                fontWeight={500}
-                fontStyle="medium"
-                fontSize="18px"
-                lineHeight="100%"
-                letterSpacing="0"
-              >
-                John Smith
-              </Text>
-              <Text
-                color="gray.500"
-                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-                fontStyle="medium"
-                fontSize="14px"
-                lineHeight="100%"
-                letterSpacing="0"
-              >
-                Admin
-              </Text>
+            <VStack spacing="0px" align="start">
+              <Text fontWeight={600} lineHeight="1">John Smith</Text>
+              <Text color="gray.500" fontSize="sm" lineHeight="1">Admin</Text>
             </VStack>
           </HStack>
           </HStack>
@@ -155,7 +137,7 @@ const Dashboard = () => {
             </Box>
           </Box>
           
-          <HStack spacing={3}>
+          <HStack spacing={3} ml="40px">
             <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
               <img
                 src={adminLogoTopRight}

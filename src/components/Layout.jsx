@@ -61,29 +61,15 @@ const NavItem = ({ to, icon, children }) => {
 const HamburgerSvg = (props) => (
   <img src={hamburgerPng} alt="Menu" width={24} height={24} {...props} />
 );
-const CloseSvg = (props) => (
-  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
-    <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 1 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4z" />
-  </svg>
-);
 
-const SidebarContent = ({ onClose }) => {
+const SidebarContent = ({ onClose, insideDrawer = false }) => {
   const { logout } = useAuth();
   return (
     <Box w="220px" h="100vh" bg="white" opacity={1} position="relative">
-      {/* Close button for mobile */}
-      <IconButton
-        display={{ base: 'flex', md: 'none' }}
-        onClick={onClose}
-        variant="ghost"
-        position="absolute"
-        top={4}
-        right={4}
-        size="sm"
-        aria-label="Close sidebar"
-      >
-        <Box as={CloseSvg} boxSize={4} />
-      </IconButton>
+      {/* Close affordance: use Drawer.CloseTrigger only when rendered inside Drawer */}
+      {insideDrawer ? (
+        <Drawer.CloseTrigger position="absolute" top={4} right={4} />
+      ) : null}
       
       <Box position="relative" h="830px">
         <VStack align="stretch" spacing={3} px={4} pt={4} pb="80px">
@@ -176,9 +162,8 @@ const Layout = () => {
           placement="left"
         >
           <Drawer.Positioner>
-            <Drawer.Content boxShadow="none">
-              <Drawer.CloseTrigger />
-              <SidebarContent onClose={() => setIsSidebarOpen(false)} />
+            <Drawer.Content boxShadow="none" w="220px" maxW="220px" p={0}>
+              <SidebarContent onClose={() => setIsSidebarOpen(false)} insideDrawer />
             </Drawer.Content>
           </Drawer.Positioner>
         </Drawer.Root>
