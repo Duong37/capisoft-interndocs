@@ -33,7 +33,7 @@ const Users = () => {
         >
           Users
         </Heading>
-        <HStack spacing="40px" align="center" display={{ base: "none", md: "flex" }}>
+        <HStack spacing="24px" align="center" display={{ base: "none", md: "flex" }}>
           <Box
             position="relative"
             width="491px"
@@ -138,11 +138,11 @@ const Users = () => {
             px="16px"
             display="flex"
             alignItems="center"
-            mb={idx !== users.length - 1 ? '24px' : 0}
+            mb={idx !== users.length - 1 ? '16px' : 0}
           >
             <HStack w="full" justify="space-between" align="center">
               <HStack spacing="16px" align="center" flex="1">
-                <Box w="56px" h="56px" borderRadius="12px" bg="gray.200" overflow="hidden" display="flex" alignItems="center" justifyContent="center">
+                <Box w="68px" h="68px" borderRadius="12px" bg="gray.200" overflow="hidden" display="flex" alignItems="center" justifyContent="center">
                   <img
                     src={require('../images/cat.png')}
                     alt="User avatar"
@@ -155,11 +155,20 @@ const Users = () => {
                     }}
                   />
                 </Box>
-                <Stack spacing={0}>
+                <Stack ml="8px">
                   <Text fontWeight="semibold">{u.name}</Text>
                   <Text fontSize="sm" color="gray.500">{u.email}</Text>
                 </Stack>
-                <Badge ml="24px" colorPalette={u.status === 'Online' ? 'green' : 'orange'}>
+                <Badge
+                  ml="24px"
+                  fontSize="lg"
+                  px="20px"
+                  py="8px"
+                  height="36px"
+                  borderRadius="10px"
+                  bg={u.status === 'Online' ? '#EBFDEF' : '#FFEFE7'}
+                  color={u.status === 'Online' ? '#42AA65' : '#FF9600'}
+                >
                   {u.status === 'Online' ? 'Online' : 'Offline'}
                 </Badge>
               </HStack>
@@ -167,7 +176,7 @@ const Users = () => {
                 <Button h="54px" w="101px" px="12px" borderRadius="8px" bg="#161819" color="white" _hover={{ bg: '#0f1011' }}>
                   Source
                 </Button>
-                <Button h="54px" w="160px" px="12px" borderRadius="8px" bg="#6F6CF3" color="white" _hover={{ bg: '#5c59e0' }}>
+                <Button h="54px" w="160px" px="12px" borderRadius="8px" bg="#6F6CF3" color="white" _hover={{ bg: '#5c59e0' }} ml="8px">
                   View Details
                 </Button>
               </HStack>

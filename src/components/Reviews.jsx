@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => (
   <Box
     bg="white"
     borderRadius="24px"
-    p="24px"
+    p="16px"
     w="full"
     h="386.5px"
     opacity={1}
@@ -29,7 +29,7 @@ const ProductCard = ({ product }) => (
     boxShadow="none"
   >
     <Box position="relative" borderRadius="lg" overflow="hidden" mb="12px">
-      <Box w="full" h="229px" borderRadius="16px" overflow="hidden" bg="gray.100">
+      <Box w="full" h="243px" borderRadius="16px" overflow="hidden" bg="gray.100">
         <img
           src={require('../images/product.jpg')}
           alt={product.name}
@@ -43,11 +43,11 @@ const ProductCard = ({ product }) => (
         />
       </Box>
     </Box>
-    <VStack align="start" spacing={1}>
-      <Text fontWeight="medium">{product.name}</Text>
-      <Text color="gray.500" fontSize="sm">{product.url}</Text>
+    <VStack align="start" spacing={0}>
+      <Text fontSize="16px" fontWeight="medium" lineHeight="1.4">{product.name}</Text>
+      <Text color="gray.500" fontSize="12px" lineHeight="1.6" mt="-2px">{product.url}</Text>
     </VStack>
-    <HStack mt="16px" w="full" h="34px" align="center" justify="space-between">
+    <HStack mt="16px" w="full" h="38px" align="end" justify="space-between">
       <Button
         w="107px"
         h="34px"
