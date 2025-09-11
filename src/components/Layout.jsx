@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Box, VStack, Link, Text, HStack, Button, Image, IconButton, useBreakpointValue, Drawer } from "@chakra-ui/react";
+import { Box, VStack, Link, Text, Button, Image, IconButton, useBreakpointValue, Drawer } from "@chakra-ui/react";
 import { Link as RouterLink, useMatch, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logoutPng from "../images/logout.png";
-import homePng from "../images/home-2.png";
-import quoteDownSquarePng from "../images/quote-down-square.png";
-import userPng from "../images/user.png";
+import homePng from "../images/home-2.svg";
+import quoteDownSquarePng from "../images/quote-down-square.svg";
+import userPng from "../images/user.svg";
 import hamburgerPng from "../images/hamburger.png";
 
 const pillProps = {
@@ -59,7 +59,7 @@ const NavItem = ({ to, icon, children }) => {
 // Lightweight inline icons to avoid @chakra-ui/icons v2/v3 mismatch
 
 const HamburgerSvg = (props) => (
-  <img src={hamburgerPng} alt="Open menu" style={{ width: "1.5em", height: "1.5em" }} {...props} />
+  <img src={hamburgerPng} alt="Menu" width={24} height={24} {...props} />
 );
 const CloseSvg = (props) => (
   <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" {...props}>
@@ -75,13 +75,15 @@ const SidebarContent = ({ onClose }) => {
       <IconButton
         display={{ base: 'flex', md: 'none' }}
         onClick={onClose}
-        icon={<Box as={CloseSvg} boxSize={4} />}
         variant="ghost"
         position="absolute"
         top={4}
         right={4}
         size="sm"
-      />
+        aria-label="Close sidebar"
+      >
+        <Box as={CloseSvg} boxSize={4} />
+      </IconButton>
       
       <Box position="relative" h="830px">
         <VStack align="stretch" spacing={3} px={4} pt={4} pb="80px">
@@ -141,19 +143,21 @@ const Layout = () => {
         <Box position="fixed" top={4} left={4} zIndex={20}>
           <IconButton
             onClick={() => setIsSidebarOpen(true)}
-            icon={<Box as={HamburgerSvg} boxSize={5} />}
             variant="solid"
             bg="white"
             color="gray.700"
             size="md"
-            boxShadow="lg"
+            boxShadow="none"
             borderRadius="12px"
             border="1px solid"
             borderColor="gray.200"
             _hover={{ bg: "gray.50", borderColor: "gray.300" }}
             _active={{ bg: "gray.100" }}
             p={3}
-          />
+            aria-label="Open sidebar"
+          >
+            <Box as={HamburgerSvg} boxSize={5} />
+          </IconButton>
         </Box>
       )}
       
@@ -171,9 +175,8 @@ const Layout = () => {
           onOpenChange={(e) => setIsSidebarOpen(e.open)}
           placement="left"
         >
-          <Drawer.Backdrop />
           <Drawer.Positioner>
-            <Drawer.Content>
+            <Drawer.Content boxShadow="none">
               <Drawer.CloseTrigger />
               <SidebarContent onClose={() => setIsSidebarOpen(false)} />
             </Drawer.Content>
