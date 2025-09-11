@@ -31,7 +31,7 @@ const ProductCard = ({ product }) => (
     <Box position="relative" borderRadius="lg" overflow="hidden" mb="12px">
       <Box w="full" h="243px" borderRadius="16px" overflow="hidden" bg="gray.100">
         <img
-          src={require('../images/product.jpg')}
+          src={product.image}
           alt={product.name}
           style={{
             width: '100%',
