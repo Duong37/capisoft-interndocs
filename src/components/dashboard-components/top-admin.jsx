@@ -7,7 +7,6 @@ import {
   HStack,
   Text,
   VStack,
-  Avatar,
   StatRoot,
   StatLabel,
   StatValueText,

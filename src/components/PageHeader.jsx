@@ -73,8 +73,8 @@ const PageHeader = ({ title }) => {
 
       {/* Mobile admin profile - positioned in top right */}
       <Box position="fixed" top={4} right={4} zIndex={15} display={{ base: "block", md: "none" }}>
-        <HStack spacing={2}>
-          <Box w="32px" h="32px" borderRadius="full" bg="gray.300" overflow="hidden">
+        <HStack spacing={3}>
+          <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
             <img
               src={adminLogoTopRight}
               alt="Admin Logo"
@@ -82,8 +82,8 @@ const PageHeader = ({ title }) => {
             />
           </Box>
           <VStack spacing="0px" align="start">
-            <Text fontWeight={600} fontSize="sm" lineHeight="1" color="gray.800">John Smith</Text>
-            <Text color="gray.500" fontSize="xs" lineHeight="1">Admin</Text>
+            <Text fontWeight={600} lineHeight="1">John Smith</Text>
+            <Text color="gray.500" fontSize="sm" lineHeight="1">Admin</Text>
           </VStack>
         </HStack>
       </Box>
