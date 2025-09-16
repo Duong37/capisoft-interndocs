@@ -549,6 +549,7 @@
         "schemas": {
             "PatchedTodoItem": {
                 "type": "object",
+                "description": "A ModelSerializer that takes additional arguments for\n\"fields\", \"omit\" and \"expand\" in order to\ncontrol which fields are displayed, and whether to replace simple\nvalues with complex, nested serializations",
                 "properties": {
                     "id": {
                         "type": "string",
@@ -588,6 +589,7 @@
             },
             "PatchedTodoList": {
                 "type": "object",
+                "description": "A ModelSerializer that takes additional arguments for\n\"fields\", \"omit\" and \"expand\" in order to\ncontrol which fields are displayed, and whether to replace simple\nvalues with complex, nested serializations",
                 "properties": {
                     "id": {
                         "type": "string",
@@ -610,7 +612,8 @@
                     },
                     "owner": {
                         "type": "string",
-                        "format": "uuid"
+                        "format": "uuid",
+                        "nullable": true
                     }
                 }
             },
@@ -625,6 +628,7 @@
             },
             "TodoItem": {
                 "type": "object",
+                "description": "A ModelSerializer that takes additional arguments for\n\"fields\", \"omit\" and \"expand\" in order to\ncontrol which fields are displayed, and whether to replace simple\nvalues with complex, nested serializations",
                 "properties": {
                     "id": {
                         "type": "string",
@@ -672,6 +676,7 @@
             },
             "TodoList": {
                 "type": "object",
+                "description": "A ModelSerializer that takes additional arguments for\n\"fields\", \"omit\" and \"expand\" in order to\ncontrol which fields are displayed, and whether to replace simple\nvalues with complex, nested serializations",
                 "properties": {
                     "id": {
                         "type": "string",
@@ -694,14 +699,14 @@
                     },
                     "owner": {
                         "type": "string",
-                        "format": "uuid"
+                        "format": "uuid",
+                        "nullable": true
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
                     "last_modified",
-                    "owner",
                     "title"
                 ]
             }

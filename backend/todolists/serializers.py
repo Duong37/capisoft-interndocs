@@ -1,7 +1,11 @@
-from rest_framework import serializers
+from rest_flex_fields import FlexFieldsModelSerializer
 from .models import TodoList
 
-class TodoListSerializer(serializers.ModelSerializer):
+class TodoListSerializer(FlexFieldsModelSerializer):
     class Meta:
         model = TodoList
         fields = '__all__'
+        expandable_fields = {
+            'owner': 'users.serializers.UserSerializer',
+            'todo_items': 'todoitems.serializers.TodoItemSerializer',
+        }
