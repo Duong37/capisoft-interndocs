@@ -1,0 +1,453 @@
+openapi: 3.0.3
+info:
+  title: Todo API
+  version: 1.0.0
+  description: A RESTful API for managing Todo Lists and Items
+paths:
+  /api/todoitems/:
+    get:
+      operationId: todoitems_list
+      tags:
+      - todoitems
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoItem'
+          description: ''
+    post:
+      operationId: todoitems_create
+      tags:
+      - todoitems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+          description: ''
+  /api/todoitems/{id}/:
+    get:
+      operationId: todoitems_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo item.
+        required: true
+      tags:
+      - todoitems
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+          description: ''
+    put:
+      operationId: todoitems_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo item.
+        required: true
+      tags:
+      - todoitems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+          description: ''
+    patch:
+      operationId: todoitems_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo item.
+        required: true
+      tags:
+      - todoitems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoItem'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+          description: ''
+    delete:
+      operationId: todoitems_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo item.
+        required: true
+      tags:
+      - todoitems
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/todolists/:
+    get:
+      operationId: todolists_list
+      tags:
+      - todolists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+          description: ''
+    post:
+      operationId: todolists_create
+      tags:
+      - todolists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+          description: ''
+  /api/todolists/{id}/:
+    get:
+      operationId: todolists_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo list.
+        required: true
+      tags:
+      - todolists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+          description: ''
+    put:
+      operationId: todolists_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo list.
+        required: true
+      tags:
+      - todolists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+          description: ''
+    patch:
+      operationId: todolists_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo list.
+        required: true
+      tags:
+      - todolists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTodoList'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+          description: ''
+    delete:
+      operationId: todolists_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this todo list.
+        required: true
+      tags:
+      - todolists
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    PatchedTodoItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        assignee:
+          type: string
+          format: uuid
+          nullable: true
+        todolist:
+          type: string
+          format: uuid
+    PatchedTodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: string
+          format: uuid
+    StatusEnum:
+      enum:
+      - PENDING
+      - IN_PROGRESS
+      - DONE
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `IN_PROGRESS` - In Progress
+        * `DONE` - Done
+    TodoItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        assignee:
+          type: string
+          format: uuid
+          nullable: true
+        todolist:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - description
+      - id
+      - last_modified
+      - title
+      - todolist
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        owner:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - id
+      - last_modified
+      - owner
+      - title
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
