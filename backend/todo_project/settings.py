@@ -11,9 +11,28 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Firebase Configuration
+try:
+    import firebase_admin
+    from firebase_admin import credentials
+
+    FIREBASE_CREDENTIALS_PATH = BASE_DIR / 'firebase-credentials.json'
+    if FIREBASE_CREDENTIALS_PATH.exists() and not firebase_admin._apps:
+        creds = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+        firebase_admin.initialize_app(creds)
+        print("Firebase initialized successfully")
+    else:
+        print("Firebase credentials not found or already initialized")
+except ImportError:
+    print("Firebase Admin SDK not installed")
+except Exception as e:
+    print(f"Firebase initialization error: {e}")
 
 
 # Quick-start development settings - unsuitable for production
@@ -134,9 +153,25 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'A RESTful API for managing Todo Lists and Items',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENTS': {
+        'securitySchemes': {
+            'bearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            }
+        }
+    },
+    'SECURITY': [{'bearerAuth': []}],
 }
 
 # DRF Configuration
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'users.authentication.FirebaseAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }

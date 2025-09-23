@@ -44,6 +44,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=UserTypes.choices,
         default=UserTypes.USER,
     )
+    firebase_uid = models.CharField(
+        max_length=128, unique=True, null=True, blank=True, db_index=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
