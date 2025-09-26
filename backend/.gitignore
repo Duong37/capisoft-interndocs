@@ -35,7 +35,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Firebase Credentials - NEVER commit this file
-# firebase-credentials.json
+firebase-credentials.json
 
 # Environment Variables
 .env

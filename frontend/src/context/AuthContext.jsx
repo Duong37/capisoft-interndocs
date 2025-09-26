@@ -78,6 +78,11 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setBackendUser(null);
       setIsAuthenticated(false);
+
+      // Clear any stored auth data from localStorage
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('user');
+      localStorage.removeItem('backendUser');
     } catch (error) {
       console.error('Logout error:', error);
     }

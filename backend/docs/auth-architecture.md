@@ -76,35 +76,22 @@ src/routes/
 
 ### Complete Authentication Flow
 
-#### User Registration (Backend-First Approach)
+#### User Registration
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant F as Frontend
+    participant F as Firebase
     participant B as Backend
-    participant D as Django
-    participant FB as Firebase
+    participant C as AuthContext
 
-    U->>F: Register form submission
-    F->>B: POST /api/users/auth/register/
-    B->>FB: Create Firebase user
-    FB->>B: Firebase UID
-    B->>D: Create Django user with Firebase UID
-    D->>B: Django user created
-    B->>F: Registration success + user data
-    F->>FB: signInWithEmailAndPassword()
-    FB->>F: Firebase token
-    F->>B: GET /api/users/auth/me/ (with token)
-    B->>B: Validate token, fetch Django user
-    B->>F: Django user data
-    F->>U: Update UI, redirect to dashboard
+    U->>F: Register(email, password)
+    F->>U: Firebase user created
+    U->>B: Register user (with token)
+    B->>B: Create Django user
+    B->>U: Django user data
+    U->>C: Update auth state
+    C->>U: Redirect to dashboard
 ```
-
-**Key Benefits:**
-- **Atomic Operations**: Both Firebase and Django users created together or neither
-- **No Race Conditions**: Backend controls all user creation logic
-- **Automatic Rollback**: Firebase user deleted if Django creation fails
-- **Clean Separation**: Frontend handles UI, backend handles data consistency
 
 #### User Login
 ```mermaid
