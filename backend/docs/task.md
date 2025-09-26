@@ -49,3 +49,9 @@ Now you will turn your skeleton Django backend into a fully functioning backend 
 - Duplicate your existing frontend code - no need to change the layout and components yet.
 - add a view, similar to the login view, which is meant for registering a user
 - Add login, register and logout functions using firebase (no need to check if the user is authenticated yet)
+
+***Task 4: Link the global auth state to the backend you created***
+
+- Within your backend create an auth endpoint. This simply return the user information and is meant to check whether the user is authenticated.
+- Use Axios (and Axios Interceptors) & TanStack Query to check whether the user is authenticated. This can then be saved to the global auth state.
+- Once this is done you can handle the logic for private and public routes.

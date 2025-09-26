@@ -16,7 +16,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
     first_name: '',
     last_name: '',
     phone: '',
@@ -179,8 +179,8 @@ const Register = () => {
                   </FieldLabel>
                   <Input
                     type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
+                    name="confirm_password"
+                    value={formData.confirm_password}
                     onChange={handleChange}
                     placeholder="••••••••"
                     bg="white"

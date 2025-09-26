@@ -7,6 +7,7 @@
 //   nest the `<Layout />` once for all private pages.
 // - Layout (sidebar + content) is applied only to authenticated areas.
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './components/Login';
@@ -19,32 +20,43 @@ import RequireAuth from './routes/RequireAuth';
 import RequireGuest from './routes/RequireGuest';
 
 function App() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Redirect bare landing to the dedicated login URL */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          {/* Public-only group */}
-          <Route element={<RequireGuest />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Route>
-
-          {/* Private group with shared Layout (sidebar) */}
-          <Route element={<RequireAuth />}>
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reviews" element={<Reviews />} />
-              <Route path="/users" element={<Users />} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Redirect bare landing to the dedicated login URL */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Public-only group */}
+            <Route element={<RequireGuest />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
             </Route>
-          </Route>
 
-          {/* Fallback: send unknown routes to dashboard if logged in, or login otherwise */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Private group with shared Layout (sidebar) */}
+            <Route element={<RequireAuth />}>
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/reviews" element={<Reviews />} />
+                <Route path="/users" element={<Users />} />
+              </Route>
+            </Route>
+
+            {/* Fallback: send unknown routes to dashboard if logged in, or login otherwise */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

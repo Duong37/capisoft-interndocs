@@ -1,5 +1,5 @@
 from rest_framework import status, permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
@@ -15,6 +15,7 @@ from .serializers import UserSerializer
 )
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
+@authentication_classes([])  # No authentication required
 def register_user(request):
     """
     Register a new user account.
@@ -39,6 +40,29 @@ def register_user(request):
 
 
 @extend_schema(
+    responses={200: UserSerializer},
+    description="Get current authenticated user information. Validates Firebase token and returns Django user data."
+)
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_current_user(request):
+    """
+    Get current authenticated user information.
+    Returns user data from Django database after validating Firebase token.
+    """
+    try:
+        # The user is already authenticated via FirebaseAuthentication
+        # request.user contains the Django user object
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {'error': f'Failed to get user information: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@extend_schema(
     request=AdminRegistrationSerializer,
     responses={201: UserSerializer},
     auth=[],  # No authentication required for registration
@@ -46,6 +70,7 @@ def register_user(request):
 )
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
+@authentication_classes([])  # No authentication required
 def register_admin(request):
     """
     Register a new admin user account.

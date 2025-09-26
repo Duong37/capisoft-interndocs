@@ -45,7 +45,30 @@ def verify_id_token(id_token: str) -> dict:
         firebase_admin.auth.ExpiredIdTokenError: If token is expired
         firebase_admin.auth.RevokedIdTokenError: If token is revoked
     """
-    return fb_auth.verify_id_token(id_token)
+    import firebase_admin
+    print(f"Debug: Verifying ID token for Firebase project")
+    print(f"Debug: Firebase app initialized: {firebase_admin._apps}")
+    print(f"Debug: Available apps: {list(firebase_admin._apps.keys())}")
+
+    try:
+        # Try to verify with explicit project ID check
+        decoded_token = fb_auth.verify_id_token(id_token, check_revoked=True)
+        print(f"Debug: Token verification successful, UID: {decoded_token.get('uid')}")
+        print(f"Debug: Token audience: {decoded_token.get('aud')}")
+        print(f"Debug: Token issuer: {decoded_token.get('iss')}")
+        return decoded_token
+    except Exception as e:
+        print(f"Debug: Token verification failed: {type(e).__name__}: {str(e)}")
+
+        # Try with more lenient options
+        try:
+            print(f"Debug: Trying with clock skew tolerance...")
+            decoded_token = fb_auth.verify_id_token(id_token, clock_skew_seconds=60)
+            print(f"Debug: Token verification successful with clock skew, UID: {decoded_token.get('uid')}")
+            return decoded_token
+        except Exception as e2:
+            print(f"Debug: Token verification with clock skew also failed: {type(e2).__name__}: {str(e2)}")
+            raise e
 
 
 def get_firebase_user(uid: str) -> dict:
@@ -59,6 +82,22 @@ def get_firebase_user(uid: str) -> dict:
         dict: User information dictionary
     """
     return fb_auth.get_user(uid)
+
+
+def get_firebase_user_by_email(email: str) -> dict:
+    """
+    Get user information from Firebase by email.
+
+    Args:
+        email: User's email address
+
+    Returns:
+        dict: User information dictionary
+
+    Raises:
+        firebase_admin.auth.UserNotFoundError: If user is not found
+    """
+    return fb_auth.get_user_by_email(email)
 
 
 def update_firebase_user(uid: str, **kwargs) -> dict:

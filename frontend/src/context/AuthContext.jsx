@@ -2,9 +2,9 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth } from '../firebase';
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
+import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -18,14 +18,20 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Firebase user
+  const [backendUser, setBackendUser] = useState(null); // Django user
   const [loading, setLoading] = useState(true);
+  const [backendLoading, setBackendLoading] = useState(false);
 
   const login = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredential.user);
       setIsAuthenticated(true);
+
+      // Fetch backend user data after successful login
+      await fetchBackendUser();
+
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -35,12 +41,33 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       const { email, password } = formData;
+      console.log('Frontend registration attempt for email:', email);
 
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Register with backend (creates both Firebase and Django users)
+      console.log('Registering with backend...');
+      await authService.register(formData);
+      console.log('Backend registration successful');
+
+      // Sign in with Firebase after successful backend registration
+      console.log('Signing in with Firebase...');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Firebase sign-in successful:', userCredential.user.email);
       setUser(userCredential.user);
       setIsAuthenticated(true);
+
+      // Fetch backend user data
+      console.log('Fetching backend user data...');
+      try {
+        const backendUserData = await authService.getCurrentUser();
+        setBackendUser(backendUserData);
+        console.log('Backend user data fetched successfully');
+      } catch (error) {
+        console.log('Error fetching backend user after registration:', error);
+      }
+
       return { success: true };
     } catch (error) {
+      console.log('Registration error:', error.code || error.name, error.message);
       return { success: false, error: error.message };
     }
   };
@@ -49,17 +76,44 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setUser(null);
+      setBackendUser(null);
       setIsAuthenticated(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
-  // Listen for auth state changes
+  const fetchBackendUser = async () => {
+    if (!auth.currentUser) return;
+
+    setBackendLoading(true);
+    try {
+      const backendUserData = await authService.getCurrentUser();
+      setBackendUser(backendUserData);
+    } catch (error) {
+      console.error('Error fetching backend user:', error);
+      // If backend user doesn't exist, user might need to register
+      if (error.response?.status === 404) {
+        // Backend user not found, might need registration
+        console.log('Backend user not found, registration might be needed');
+      }
+    } finally {
+      setBackendLoading(false);
+    }
+  };
+
+  // Listen for Firebase auth state changes
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setIsAuthenticated(!!user);
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      setUser(firebaseUser);
+      setIsAuthenticated(!!firebaseUser);
+
+      if (firebaseUser) {
+        await fetchBackendUser();
+      } else {
+        setBackendUser(null);
+      }
+
       setLoading(false);
     });
 
@@ -69,15 +123,17 @@ export const AuthProvider = ({ children }) => {
   const value = {
     isAuthenticated,
     user,
-    loading,
+    backendUser,
+    loading: loading || backendLoading,
     login,
     register,
-    logout
+    logout,
+    fetchBackendUser,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

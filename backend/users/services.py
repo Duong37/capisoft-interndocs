@@ -42,6 +42,7 @@ def register_local_and_firebase_user(
     """
     # Create Firebase user first
     firebase_uid = create_firebase_user(email=email, password=password)
+    print(f"Debug: Created Firebase user: {email} (UID: {firebase_uid})")
 
     try:
         # Create Django user
@@ -58,12 +59,14 @@ def register_local_and_firebase_user(
         # Link Firebase UID to Django user
         user.firebase_uid = firebase_uid
         user.save(update_fields=["firebase_uid"])
+        print(f"Debug: Created Django user: {email} with Firebase UID: {firebase_uid}")
 
         return user
 
     except Exception as e:
         # Rollback: Delete Firebase user if Django user creation fails
         delete_firebase_user(firebase_uid)
+        print(f"Debug: Django user creation failed, rolled back Firebase user: {e}")
         raise e
 
 

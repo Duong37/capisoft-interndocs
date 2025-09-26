@@ -41,15 +41,19 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
         Verify Firebase token and return the corresponding Django user.
         """
         try:
+            print(f"Debug: Authentication attempt with token length: {len(token)}")
+
             # Verify the Firebase ID token
             decoded_token = verify_id_token(token)
 
             # Extract user information from token
             firebase_uid = decoded_token['uid']
             email = decoded_token.get('email')
+            print(f"Debug: Token decoded - UID: {firebase_uid}, Email: {email}")
 
             # Find the corresponding Django user
             user = get_user_by_firebase_uid(firebase_uid)
+            print(f"Debug: Django user lookup result: {user is not None}")
 
             if user is None:
                 raise exceptions.AuthenticationFailed('No such user found in our database.')
@@ -57,11 +61,14 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             if not user.is_active:
                 raise exceptions.AuthenticationFailed('User account is disabled.')
 
+            print(f"Debug: Authentication successful for user: {user.email}")
             return (user, token)
 
         except ValueError as e:
+            print(f"Debug: ValueError in authentication: {str(e)}")
             raise exceptions.AuthenticationFailed(f'Invalid token: {str(e)}')
         except Exception as e:
+            print(f"Debug: General authentication error: {type(e).__name__}: {str(e)}")
             raise exceptions.AuthenticationFailed(f'Authentication failed: {str(e)}')
 
     def authenticate_header(self, request):
