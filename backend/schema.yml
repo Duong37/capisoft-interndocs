@@ -10,9 +10,7 @@ paths:
       tags:
       - todoitems
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -39,9 +37,7 @@ paths:
               $ref: '#/components/schemas/TodoItem'
         required: true
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '201':
           content:
@@ -57,15 +53,11 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo item.
         required: true
       tags:
       - todoitems
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -80,8 +72,6 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo item.
         required: true
       tags:
       - todoitems
@@ -98,9 +88,7 @@ paths:
               $ref: '#/components/schemas/TodoItem'
         required: true
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -115,8 +103,6 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo item.
         required: true
       tags:
       - todoitems
@@ -132,9 +118,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedTodoItem'
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -149,27 +133,36 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo item.
         required: true
       tags:
       - todoitems
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '204':
           description: No response body
+  /api/todoitems/assigned_to_me/:
+    get:
+      operationId: todoitems_assigned_to_me_retrieve
+      description: Get all TodoItems assigned to the current user.
+      tags:
+      - todoitems
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+          description: ''
   /api/todolists/:
     get:
       operationId: todolists_list
       tags:
       - todolists
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -196,9 +189,7 @@ paths:
               $ref: '#/components/schemas/TodoList'
         required: true
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '201':
           content:
@@ -214,15 +205,11 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo list.
         required: true
       tags:
       - todolists
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -237,8 +224,6 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo list.
         required: true
       tags:
       - todolists
@@ -255,9 +240,7 @@ paths:
               $ref: '#/components/schemas/TodoList'
         required: true
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -272,8 +255,6 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo list.
         required: true
       tags:
       - todolists
@@ -289,9 +270,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedTodoList'
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
@@ -306,22 +285,137 @@ paths:
         name: id
         schema:
           type: string
-          format: uuid
-        description: A UUID string identifying this todo list.
         required: true
       tags:
       - todolists
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '204':
           description: No response body
+  /api/users/:
+    get:
+      operationId: users_list
+      description: Get a list of all users with safe fields only. Public endpoint.
+      tags:
+      - users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/auth/register/:
+    post:
+      operationId: users_auth_register_create
+      description: Register a new user account. Creates both Firebase and Django user.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/auth/register-admin/:
+    post:
+      operationId: users_auth_register_admin_create
+      description: Register a new admin user account. Requires valid admin registration
+        code.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRegistration'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminRegistration'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminRegistration'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
 components:
   schemas:
+    AdminRegistration:
+      type: object
+      description: |-
+        Input validation and data transformation for admin user registration.
+
+        Responsibilities:
+        - Validates required fields (email, first_name, last_name)
+        - Confirms password match and minimum length
+        - Validates admin registration code for security
+        - Delegates actual admin user creation to services layer
+
+        Use case: POST /api/users/auth/register-admin/
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        confirm_password:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        birthday:
+          type: string
+          format: date
+          nullable: true
+        admin_code:
+          type: string
+          writeOnly: true
+      required:
+      - admin_code
+      - confirm_password
+      - email
+      - first_name
+      - last_name
+      - password
     PatchedTodoItem:
       type: object
+      description: |-
+        A ModelSerializer that takes additional arguments for
+        "fields", "omit" and "expand" in order to
+        control which fields are displayed, and whether to replace simple
+        values with complex, nested serializations
       properties:
         id:
           type: string
@@ -351,6 +445,11 @@ components:
           format: uuid
     PatchedTodoList:
       type: object
+      description: |-
+        A ModelSerializer that takes additional arguments for
+        "fields", "omit" and "expand" in order to
+        control which fields are displayed, and whether to replace simple
+        values with complex, nested serializations
       properties:
         id:
           type: string
@@ -370,6 +469,7 @@ components:
         owner:
           type: string
           format: uuid
+          nullable: true
     StatusEnum:
       enum:
       - PENDING
@@ -382,6 +482,11 @@ components:
         * `DONE` - Done
     TodoItem:
       type: object
+      description: |-
+        A ModelSerializer that takes additional arguments for
+        "fields", "omit" and "expand" in order to
+        control which fields are displayed, and whether to replace simple
+        values with complex, nested serializations
       properties:
         id:
           type: string
@@ -418,6 +523,11 @@ components:
       - todolist
     TodoList:
       type: object
+      description: |-
+        A ModelSerializer that takes additional arguments for
+        "fields", "omit" and "expand" in order to
+        control which fields are displayed, and whether to replace simple
+        values with complex, nested serializations
       properties:
         id:
           type: string
@@ -437,17 +547,109 @@ components:
         owner:
           type: string
           format: uuid
+          nullable: true
       required:
       - created_at
       - id
       - last_modified
-      - owner
       - title
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
+    User:
+      type: object
+      description: |-
+        Purpose: Serialize/deserialize existing user data for API responses,
+        display existing user information
+        Use case: GET /api/users/ (public user listing)
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        birthday:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_modified:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - id
+      - last_modified
+      - last_name
+    UserRegistration:
+      type: object
+      description: |-
+        Input validation and data transformation for user registration.
+
+        Responsibilities:
+        - Validates required fields (email, first_name, last_name)
+        - Confirms password match
+        - Ensures minimum password length (6 characters)
+        - Delegates actual user creation to services layer
+
+        Use case: POST /api/users/auth/register/
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+        confirm_password:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        birthday:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - confirm_password
+      - email
+      - first_name
+      - last_name
+      - password
+    UserTypeEnum:
+      enum:
+      - USER
+      - ADMIN
+      type: string
+      description: |-
+        * `USER` - User
+        * `ADMIN` - Admin

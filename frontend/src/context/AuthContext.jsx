@@ -1,4 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { auth } from '../firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut
+} from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -11,42 +17,67 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // Initialize auth state from localStorage so refresh/direct URL navigation
-  // doesn't drop the authenticated session for this prototype.
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const login = async (email, password) => {
     try {
-      return localStorage.getItem('isAuthenticated') === 'true';
-    } catch {
-      return false;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      setUser(userCredential.user);
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
     }
-  });
-
-  const login = () => {
-    setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
+  const register = async (formData) => {
+    try {
+      const { email, password } = formData;
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      setUser(userCredential.user);
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   };
 
-  // Persist to localStorage whenever it changes
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // Listen for auth state changes
   useEffect(() => {
-    try {
-      localStorage.setItem('isAuthenticated', isAuthenticated ? 'true' : 'false');
-    } catch {
-      // ignore storage errors in prototype
-    }
-  }, [isAuthenticated]);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      setIsAuthenticated(!!user);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
 
   const value = {
     isAuthenticated,
+    user,
+    loading,
     login,
+    register,
     logout
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

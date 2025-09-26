@@ -243,6 +243,32 @@
                 }
             }
         },
+        "/api/todoitems/assigned_to_me/": {
+            "get": {
+                "operationId": "todoitems_assigned_to_me_retrieve",
+                "description": "Get all TodoItems assigned to the current user.",
+                "tags": [
+                    "todoitems"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TodoItem"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/todolists/": {
             "get": {
                 "operationId": "todolists_list",
@@ -591,7 +617,7 @@
         "schemas": {
             "AdminRegistration": {
                 "type": "object",
-                "description": "Serializer for admin user registration with admin code protection.",
+                "description": "Input validation and data transformation for admin user registration.\n\nResponsibilities:\n- Validates required fields (email, first_name, last_name)\n- Confirms password match and minimum length\n- Validates admin registration code for security\n- Delegates actual admin user creation to services layer\n\nUse case: POST /api/users/auth/register-admin/",
                 "properties": {
                     "email": {
                         "type": "string",
@@ -804,7 +830,7 @@
             },
             "User": {
                 "type": "object",
-                "description": "A ModelSerializer that takes additional arguments for\n\"fields\", \"omit\" and \"expand\" in order to\ncontrol which fields are displayed, and whether to replace simple\nvalues with complex, nested serializations",
+                "description": "Purpose: Serialize/deserialize existing user data for API responses,\ndisplay existing user information\nUse case: GET /api/users/ (public user listing)",
                 "properties": {
                     "id": {
                         "type": "string",
@@ -862,7 +888,7 @@
             },
             "UserRegistration": {
                 "type": "object",
-                "description": "Serializer for user registration.\nCreates both Firebase and Django user.",
+                "description": "Input validation and data transformation for user registration.\n\nResponsibilities:\n- Validates required fields (email, first_name, last_name)\n- Confirms password match\n- Ensures minimum password length (6 characters)\n- Delegates actual user creation to services layer\n\nUse case: POST /api/users/auth/register/",
                 "properties": {
                     "email": {
                         "type": "string",

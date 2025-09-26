@@ -10,6 +10,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './components/Login';
+import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Users from './components/Users';
 import Reviews from './components/Reviews';
@@ -27,6 +28,7 @@ function App() {
           {/* Public-only group */}
           <Route element={<RequireGuest />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
 
           {/* Private group with shared Layout (sidebar) */}

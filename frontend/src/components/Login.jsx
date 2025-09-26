@@ -17,9 +17,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login();
+    const result = await login(email, password);
+    if (!result.success) {
+      alert(result.error);
+    }
   };
 
   return (

@@ -43,3 +43,9 @@ Now you will turn your skeleton Django backend into a fully functioning backend 
     3. A user can only perform CRUD operations on their own created TodoList and TodoItems
 4. Allow users to assign other users tasks from their own TodoList
 5. Create a GET endpoint that shows all tasks that have been assigned to a user
+
+***Task 3: Create a functioning global auth state***
+
+- Duplicate your existing frontend code - no need to change the layout and components yet.
+- add a view, similar to the login view, which is meant for registering a user
+- Add login, register and logout functions using firebase (no need to check if the user is authenticated yet)
