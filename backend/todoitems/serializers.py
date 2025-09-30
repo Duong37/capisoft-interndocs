@@ -8,20 +8,20 @@ class TodoItemSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
         expandable_fields = {
             'assignee': 'users.serializers.UserSerializer',
-            'todolist': 'todolists.serializers.TodoListSerializer',
+            'todolists': 'todolists.serializers.TodoListSerializer',
         }
 
-    def validate_todolist(self, value):
+    def validate_todolists(self, value):
         """
         Field-level validation: Ensure user can only operate on their own TodoLists (unless admin).
 
-        This runs when the 'todolist' field is set or changed, preventing users from assigning items to TodoLists they don't own. Catches TodoList reassignment attempts.
-
-        Note: This complements validate() which handles overall operation permissions.
+        This runs when the 'todolists' field is set or changed, preventing users from assigning items to TodoLists they don't own.
         """
         user = self.context['request'].user
-        if getattr(user, 'user_type', '') != 'ADMIN' and value.owner != user:
-            raise serializers.ValidationError("You can only operate on your own TodoLists.")
+        if getattr(user, 'user_type', '') != 'ADMIN':
+            for todolist in value.all():
+                if todolist.owner != user:
+                    raise serializers.ValidationError("You can only assign items to your own TodoLists.")
         return value
 
     def validate_assignee(self, value):
@@ -37,29 +37,22 @@ class TodoItemSerializer(FlexFieldsModelSerializer):
         Object-level validation: Ensure only TodoList owners or admins can assign/modify items.
 
         This runs for ANY field change (create/update) and checks overall operation permissions.
-        It complements validate_todolist() by catching scenarios where users try to modify items that currently reside in TodoLists they don't own.
-
-        Scenarios caught:
-        - Creating new items in someone else's TodoList
-        - Modifying any item details (title, status, assignee) when the item belongs to someone else's TodoList
-        - Any operation on items where the current TodoList owner is not the requesting user
-
-        Key difference from validate_todolist():
-        - validate_todolist(): Prevents moving items TO unauthorized TodoLists
-        - validate(): Prevents modifying items IN unauthorized TodoLists
+        For ManyToMany relationship, ensures user has permission for ALL associated TodoLists.
         """
         user = self.context['request'].user
 
-        # For updates, check the existing todolist ownership
+        # For updates, check the existing todolists ownership
         if self.instance:
-            todolist = self.instance.todolist
-        # For creates, check the new todolist ownership
+            todolists = self.instance.todolists.all()
+        # For creates, check the new todolists ownership
         else:
-            todolist = attrs.get('todolist')
+            todolists = attrs.get('todolists', [])
 
-        if todolist and getattr(user, 'user_type', '') != 'ADMIN' and todolist.owner != user:
-            raise serializers.ValidationError(
-                "Only the TodoList owner or admin can assign or modify items on this list."
-            )
+        if getattr(user, 'user_type', '') != 'ADMIN':
+            for todolist in todolists:
+                if todolist.owner != user:
+                    raise serializers.ValidationError(
+                        "Only the TodoList owner or admin can assign or modify items on this list."
+                    )
 
         return attrs

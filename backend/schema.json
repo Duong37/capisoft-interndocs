@@ -530,6 +530,32 @@
                 }
             }
         },
+        "/api/users/auth/me/": {
+            "get": {
+                "operationId": "users_auth_me_retrieve",
+                "description": "Get current authenticated user information. Validates Firebase token and returns Django user data.",
+                "tags": [
+                    "users"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/users/auth/register/": {
             "post": {
                 "operationId": "users_auth_register_create",
@@ -699,9 +725,12 @@
                         "format": "uuid",
                         "nullable": true
                     },
-                    "todolist": {
-                        "type": "string",
-                        "format": "uuid"
+                    "todolists": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 }
             },
@@ -778,9 +807,12 @@
                         "format": "uuid",
                         "nullable": true
                     },
-                    "todolist": {
-                        "type": "string",
-                        "format": "uuid"
+                    "todolists": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 },
                 "required": [
@@ -789,7 +821,7 @@
                     "id",
                     "last_modified",
                     "title",
-                    "todolist"
+                    "todolists"
                 ]
             },
             "TodoList": {

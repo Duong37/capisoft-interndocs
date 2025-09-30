@@ -18,7 +18,7 @@ class TodoItem(models.Model):
         default=Status.PENDING,
     )
     assignee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
-    todolist = models.ForeignKey(TodoList, on_delete=models.CASCADE, related_name='items')
+    todolists = models.ManyToManyField(TodoList, related_name='items')
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 

@@ -17,6 +17,18 @@ import json
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+ENV_FILE = BASE_DIR / '.env'
+if ENV_FILE.exists():
+    with open(ENV_FILE, 'r') as f:
+        for line in f:
+            if '=' in line and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
+    print("Environment variables loaded from .env")
+else:
+    print("No .env file found")
+
 # Firebase Configuration
 try:
     import firebase_admin

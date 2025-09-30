@@ -20,8 +20,8 @@ class TodoItemViewSet(viewsets.ModelViewSet):
         if getattr(user, 'user_type', '') == 'ADMIN':
             return qs
 
-        # Regular users can only see items from their own TodoLists
-        return qs.filter(todolist__owner=user)
+        # Regular users can only see items from their own TodoLists (ManyToMany)
+        return qs.filter(todolists__owner=user)
 
     @action(detail=False, methods=['get'])
     def assigned_to_me(self, request):

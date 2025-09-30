@@ -55,3 +55,15 @@ Now you will turn your skeleton Django backend into a fully functioning backend 
 - Within your backend create an auth endpoint. This simply return the user information and is meant to check whether the user is authenticated.
 - Use Axios (and Axios Interceptors) & TanStack Query to check whether the user is authenticated. This can then be saved to the global auth state.
 - Once this is done you can handle the logic for private and public routes.
+
+***Task 5: Link the global auth state to the backend you created***
+
+- Leave the theming of your project as-is. Modify the private routes views to make if a proper to-do list app.
+- Here you will have full creative freedom to create a UI, which **fully accommodates all your endpoints**.
+- Use Chakra-UI for all components and keeps a consistent styled system, just like before
+
+***Task 6: Link the global auth state to the backend you created***
+
+- Using Axios & TanStack Query integrate all endpoints you have created from your backend.
+- Ensure full functionality of the to-do for both admins and users
+- Implement examples of skeleton loading, infinite scrolling, and optimistic updating
