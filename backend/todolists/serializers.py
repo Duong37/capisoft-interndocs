@@ -7,5 +7,5 @@ class TodoListSerializer(FlexFieldsModelSerializer):
         fields = '__all__'
         expandable_fields = {
             'owner': 'users.serializers.UserSerializer',
-            'todo_items': 'todoitems.serializers.TodoItemSerializer',
+            'items': 'todoitems.serializers.TodoItemSerializer',
         }

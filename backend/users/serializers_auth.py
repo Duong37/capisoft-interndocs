@@ -57,18 +57,16 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
     Responsibilities:
     - Validates required fields (email, first_name, last_name)
     - Confirms password match and minimum length
-    - Validates admin registration code for security
     - Delegates actual admin user creation to services layer
 
     Use case: POST /api/users/auth/register-admin/
     """
     password = serializers.CharField(write_only=True, min_length=6)
     confirm_password = serializers.CharField(write_only=True)
-    admin_code = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'confirm_password', 'first_name', 'last_name', 'phone', 'birthday', 'admin_code']
+        fields = ['email', 'password', 'confirm_password', 'first_name', 'last_name', 'phone', 'birthday']
         extra_kwargs = {
             'email': {'required': True},
             'first_name': {'required': True},
@@ -79,16 +77,10 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError("Passwords don't match.")
 
-        # Validate admin registration code
-        expected_code = os.getenv('ADMIN_REG_CODE', 'default-admin-code')
-        if attrs['admin_code'] != expected_code:
-            raise serializers.ValidationError("Invalid admin registration code.")
-
         return attrs
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
-        validated_data.pop('admin_code')
         from .services import create_admin_user
 
         return create_admin_user(

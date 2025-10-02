@@ -67,3 +67,10 @@ Now you will turn your skeleton Django backend into a fully functioning backend 
 - Using Axios & TanStack Query integrate all endpoints you have created from your backend.
 - Ensure full functionality of the to-do for both admins and users
 - Implement examples of skeleton loading, infinite scrolling, and optimistic updating
+
+***Task 7: Link the global auth state to the backend you created***
+
+- Leave the theming of your project as-is. Modify the private routes views to make if a proper to-do list app.
+- Here you will have full creative freedom to create a UI, which **fully accommodates all your endpoints**.
+- Use Chakra-UI for all components and keeps a consistent styled system, just like before
+

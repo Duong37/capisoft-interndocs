@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Box,
@@ -16,6 +17,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,8 +29,8 @@ const Login = () => {
 
   return (
     <Box minH="100vh" bg="gray.50" display="flex" alignItems="center" justifyContent="center">
-      <Container maxW="md" py={{ base: 12, md: 24 }}>
-        <Stack spacing={8} align="center">
+      <Container maxW="md">
+        <Stack align="center">
           <Stack spacing={2} textAlign="center">
             <Heading 
               size="xl"
@@ -116,6 +118,25 @@ const Login = () => {
                   fontSize="16px"
                 >
                   Log in
+                </Button>
+                <Text
+                  textAlign="center"
+                  color="gray.600"
+                  fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                  fontSize="14px"
+                >
+                  Don't have an account yet?
+                </Text>
+                <Button
+                  variant="link"
+                  color="#6F6CF3"
+                  fontWeight={500}
+                  fontSize="14px"
+                  textDecoration="underline"
+                  onClick={() => navigate('/register')}
+                  _hover={{ color: '#5c59e0' }}
+                >
+                  Register here
                 </Button>
               </Stack>
             </Box>

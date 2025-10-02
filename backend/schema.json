@@ -318,8 +318,7 @@
                                 "$ref": "#/components/schemas/TodoList"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "security": [
                     {
@@ -406,8 +405,7 @@
                                 "$ref": "#/components/schemas/TodoList"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "security": [
                     {
@@ -643,7 +641,7 @@
         "schemas": {
             "AdminRegistration": {
                 "type": "object",
-                "description": "Input validation and data transformation for admin user registration.\n\nResponsibilities:\n- Validates required fields (email, first_name, last_name)\n- Confirms password match and minimum length\n- Validates admin registration code for security\n- Delegates actual admin user creation to services layer\n\nUse case: POST /api/users/auth/register-admin/",
+                "description": "Input validation and data transformation for admin user registration.\n\nResponsibilities:\n- Validates required fields (email, first_name, last_name)\n- Confirms password match and minimum length\n- Delegates actual admin user creation to services layer\n\nUse case: POST /api/users/auth/register-admin/",
                 "properties": {
                     "email": {
                         "type": "string",
@@ -676,14 +674,9 @@
                         "type": "string",
                         "format": "date",
                         "nullable": true
-                    },
-                    "admin_code": {
-                        "type": "string",
-                        "writeOnly": true
                     }
                 },
                 "required": [
-                    "admin_code",
                     "confirm_password",
                     "email",
                     "first_name",
@@ -724,13 +717,6 @@
                         "type": "string",
                         "format": "uuid",
                         "nullable": true
-                    },
-                    "todolists": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
                     }
                 }
             },
@@ -742,10 +728,6 @@
                         "type": "string",
                         "format": "uuid",
                         "readOnly": true
-                    },
-                    "title": {
-                        "type": "string",
-                        "maxLength": 255
                     },
                     "created_at": {
                         "type": "string",
@@ -761,6 +743,13 @@
                         "type": "string",
                         "format": "uuid",
                         "nullable": true
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 }
             },
@@ -806,13 +795,6 @@
                         "type": "string",
                         "format": "uuid",
                         "nullable": true
-                    },
-                    "todolists": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
                     }
                 },
                 "required": [
@@ -820,8 +802,7 @@
                     "description",
                     "id",
                     "last_modified",
-                    "title",
-                    "todolists"
+                    "title"
                 ]
             },
             "TodoList": {
@@ -832,10 +813,6 @@
                         "type": "string",
                         "format": "uuid",
                         "readOnly": true
-                    },
-                    "title": {
-                        "type": "string",
-                        "maxLength": 255
                     },
                     "created_at": {
                         "type": "string",
@@ -851,13 +828,19 @@
                         "type": "string",
                         "format": "uuid",
                         "nullable": true
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 },
                 "required": [
                     "created_at",
                     "id",
-                    "last_modified",
-                    "title"
+                    "last_modified"
                 ]
             },
             "User": {

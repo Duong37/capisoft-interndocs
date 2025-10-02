@@ -98,7 +98,7 @@ Role-based access control with object-level permissions:
 ### API Structure
 **Authentication Endpoints** (`/api/users/auth/`):
 - `POST /register/` - Public user registration
-- `POST /register-admin/` - Admin registration (requires `ADMIN_REG_CODE`)
+- `POST /register-admin/` - Admin registration
 
 **TodoList Management** (`/api/todolists/`):
 - Full CRUD with automatic owner assignment
