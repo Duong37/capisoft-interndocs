@@ -10,7 +10,18 @@ import {
   Stack,
   Text,
   Container,
+  Select,
+  Portal,
+  createListCollection,
 } from '@chakra-ui/react';
+
+// Match backend UserTypes from users/models.py
+const userTypes = createListCollection({
+  items: [
+    { label: "User", value: "USER" },  // From UserTypes.USER = "USER", "User"
+    { label: "Admin", value: "ADMIN" }, // From UserTypes.ADMIN = "ADMIN", "Admin"
+  ],
+});
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +30,7 @@ const Register = () => {
     confirm_password: '',
     first_name: '',
     last_name: '',
+    user_type: '',
     phone: '',
     birthday: ''
   });
@@ -33,6 +45,7 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log('Submitting form data:', formData);
     const result = await register(formData);
     if (!result.success) {
       alert(result.error);
@@ -191,6 +204,71 @@ const Register = () => {
                     _focus={{ boxShadow: 'sm', borderColor: '#6F6CF3' }}
                     _placeholder={{ color: 'gray.400' }}
                   />
+                </FieldRoot>
+                <FieldRoot required>
+                  <Select.Root
+                    value={formData.user_type ? [formData.user_type] : []}
+                    onValueChange={(details) => {
+                      const [userType] = details.value; // Destructure single element
+                      console.log('Selected user type:', userType);
+                      setFormData({...formData, user_type: userType});
+                    }}
+                    collection={userTypes}
+                  >
+                    <Select.HiddenSelect name="user_type" />
+                    <Select.Label
+                      fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                      fontWeight={500}
+                      color="gray.700"
+                      mb={2}
+                    >
+                      User Type
+                    </Select.Label>
+
+                    <Select.Control>
+                      <Select.Trigger
+                        h="50px"
+                        px={3}
+                        borderRadius="8px"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                        bg="white"
+                        _focus={{ borderColor: '#6F6CF3', boxShadow: 'sm' }}
+                        _hover={{ borderColor: 'gray.300' }}
+                      >
+                        <Select.ValueText
+                          placeholder="Select account type"
+                          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                          fontSize="14px"
+                          color="gray.700"
+                        />
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator />
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content
+                          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                          fontSize="14px"
+                          bg="white"
+                          borderRadius="8px"
+                          borderWidth="1px"
+                          borderColor="gray.200"
+                          boxShadow="lg"
+                        >
+                          {userTypes.items.map((userType) => (
+                            <Select.Item item={userType} key={userType.value}>
+                              {userType.label}
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FieldRoot>
                 <FieldRoot>
                   <FieldLabel
