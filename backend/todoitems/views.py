@@ -11,17 +11,23 @@ class TodoItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
+        Filter TodoItems based on todolist parameter and user permissions.
         Admin users see all TodoItems, regular users see only items from their own TodoLists.
         """
         qs = TodoItem.objects.all()
         user = self.request.user
 
-        # Admin users can see all items
+        # Filter by specific todolist if provided in query params
+        todolist_id = self.request.query_params.get('todolist')
+        if todolist_id:
+            qs = qs.filter(lists__id=todolist_id)
+
+        # Admin users can see all items (after todolist filter)
         if getattr(user, 'user_type', '') == 'ADMIN':
             return qs
 
         # Regular users can only see items from their own TodoLists (ManyToMany)
-        return qs.filter(todolists__owner=user)
+        return qs.filter(lists__owner=user)
 
     @action(detail=False, methods=['get'])
     def assigned_to_me(self, request):

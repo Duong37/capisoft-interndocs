@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import User
 import os
+from .services import register_local_and_firebase_user
+from .services import create_admin_user
 
 User = get_user_model()
 
@@ -37,7 +39,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
-        from .services import register_local_and_firebase_user
 
         return register_local_and_firebase_user(
             email=validated_data['email'],
@@ -81,7 +82,6 @@ class AdminRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
-        from .services import create_admin_user
 
         return create_admin_user(
             email=validated_data['email'],

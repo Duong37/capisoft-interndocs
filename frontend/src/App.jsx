@@ -15,6 +15,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Users from './components/Users';
 import Reviews from './components/Reviews';
+import Todo from './components/Todo';
 import Layout from './components/Layout';
 import RequireAuth from './routes/RequireAuth';
 import RequireGuest from './routes/RequireGuest';
@@ -48,6 +49,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/reviews" element={<Reviews />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/todo" element={<Todo />} />
               </Route>
             </Route>
 

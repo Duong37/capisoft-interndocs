@@ -20,8 +20,8 @@ api.interceptors.request.use(
         const token = await currentUser.getIdToken();
         config.headers.Authorization = `Bearer ${token}`;
         console.log('Added auth token to request:', config.url);
-        console.log('Token length:', token.length);
-        console.log('Token first 20 chars:', token.substring(0, 20) + '...');
+        // console.log('Token length:', token.length);
+        // console.log('Token first 20 chars:', token.substring(0, 20) + '...');
       } catch (error) {
         console.error('Error getting Firebase token:', error);
       }

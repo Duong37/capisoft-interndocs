@@ -7,6 +7,7 @@ import homePng from "../images/home-2.svg";
 import quoteDownSquarePng from "../images/quote-down-square.svg";
 import userPng from "../images/user.svg";
 import hamburgerPng from "../images/hamburger.png";
+import todoPng from "../images/todo.png";
 
 const pillProps = {
   w: "180px",
@@ -93,6 +94,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
           <NavItem to="/dashboard" icon={homePng}>Dashboard</NavItem>
           <NavItem to="/reviews" icon={quoteDownSquarePng}>Reviews</NavItem>
           <NavItem to="/users" icon={userPng}>Users</NavItem>
+          <NavItem to="/todo" icon={todoPng}>Todo</NavItem>
         </VStack>
 
         <Button
