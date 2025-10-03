@@ -36,8 +36,7 @@ export const useUpdateTodoListMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }) => todoService.updateTodoList(id, data),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
-      queryClient.invalidateQueries({ queryKey: ['todolists', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['todolists', variables.id], exact: true });
     },
   });
 };
@@ -86,7 +85,6 @@ export const useCreateTodoItemMutation = () => {
     mutationFn: todoService.createTodoItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todoitems'] });
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
     },
   });
 };
@@ -97,10 +95,22 @@ export const useUpdateTodoItemMutation = () => {
   return useMutation({
     mutationFn: ({ id, data }) => todoService.updateTodoItem(id, data),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
-      queryClient.invalidateQueries({ queryKey: ['todoitems', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['todolists'] });
-      queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'] });
+      // Before (too broad):
+      // queryClient.invalidateQueries({ queryKey: ['todoitems'] });
+      // queryClient.invalidateQueries({ queryKey: ['todoitems', variables.id] });
+      // queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      // queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'] });
+    
+      // After (targeted):
+      queryClient.invalidateQueries({ queryKey: ['todoitems', variables.id], exact: true });
+    
+      if (data?.todolist) {
+        // list assignment changed or list aggregates depend on items
+        queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      }
+      if (Object.prototype.hasOwnProperty.call(data ?? {}, 'assignee')) {
+        queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'], exact: true });
+      }
     },
   });
 };

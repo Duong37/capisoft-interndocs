@@ -37,7 +37,10 @@ const Todo = () => {
 
   // Fetch only current user's todo lists (based on authentication)
   const { data: todoLists, isLoading, error } = useTodoListsQuery();
+
+  // Fetch all users
   const { data: users } = useUsersQuery();
+
   // Fetch all todo items (independent of selected list)
   const { data: todoItems, isLoading: itemsLoading } = useTodoItemsQuery({});
 
@@ -57,7 +60,7 @@ const Todo = () => {
     }
   }, [listDetails]);
 
-  // Edit handlers
+// Edit handlers
   const handleEditList = (listId) => {
     setEditingList(listId);
     editListModal.onOpen();
@@ -100,10 +103,10 @@ const Todo = () => {
     }
   };
 
-  console.log('Todo lists data:', todoLists);
-  console.log('Number of todo lists:', todoLists?.length || 0);
-  console.log('Selected list:', selectedList);
-  console.log('Todo items for selected list:', todoItems);
+//   console.log('Todo lists data:', todoLists);
+//   console.log('Number of todo lists:', todoLists?.length || 0);
+//   console.log('Selected list:', selectedList);
+//   console.log('Todo items for selected list:', todoItems);
   console.log('Query params being sent:', selectedList ? { todolist: selectedList.id } : {});
 
   return (
@@ -136,6 +139,7 @@ const Todo = () => {
                 onListSelect={setSelectedList}
                 loading={isLoading}
                 error={error}
+                onEditList={handleEditList}
               />
             </Card>
           </GridItem>
@@ -149,6 +153,7 @@ const Todo = () => {
                 error={null}
                 selectedItem={selectedItem}
                 onSelectItem={setSelectedItem}
+                onEditItem={handleEditItem}
               />
             </Card>
           </GridItem>
@@ -157,7 +162,7 @@ const Todo = () => {
 
       {/* Edit List Modal */}
       <TodoListModal
-        isOpen={editListModal.open}
+        isOpen={editListModal.isOpen}
         onClose={editListModal.onClose}
         editForm={editListForm}
         setEditForm={setEditListForm}
@@ -168,14 +173,15 @@ const Todo = () => {
 
       {/* Edit Item Modal */}
       <TodoItemModal
-        isOpen={editItemModal.open}
+        isOpen={editItemModal.isOpen}
         onClose={editItemModal.onClose}
         editForm={editItemForm}
         setEditForm={setEditItemForm}
-        onUpdate={handleUpdateItem} // TODO: Implement item update logic
-        isLoading={false}
+        onUpdate={handleUpdateItem}
+        isLoading={updateItemMutation.isPending}
         isValid={editItemForm.title && editItemForm.title.trim().length > 0}
         isEditing={!!editingItem}
+        users={users}
       />
     </Box>
   );

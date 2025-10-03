@@ -10,6 +10,7 @@ import {
   CardBody,
   Badge,
   Box,
+  IconButton,
 } from '@chakra-ui/react';
 
 const TodoLists = ({
@@ -17,7 +18,8 @@ const TodoLists = ({
   selectedList,
   onListSelect,
   loading,
-  error
+  error,
+  onEditList
 }) => {
   if (loading) {
     return (
@@ -86,12 +88,25 @@ const TodoLists = ({
                     {list.description || 'No description'}
                   </Text>
                   <HStack justify="space-between" w="full" pt={2}>
-                    <Badge colorScheme="blue" fontSize="xs">
-                      {list.items?.length || 0} items
-                    </Badge>
-                    <Text fontSize="xs" color="gray.500">
-                      {new Date(list.created_at).toLocaleDateString()}
-                    </Text>
+                    <HStack spacing={2}>
+                      <Badge colorScheme="blue" fontSize="xs">
+                        {list.items?.length || 0} items
+                      </Badge>
+                      <Text fontSize="xs" color="gray.500">
+                        {new Date(list.created_at).toLocaleDateString()}
+                      </Text>
+                    </HStack>
+                    <IconButton
+                      size="xs"
+                      variant="ghost"
+                      colorScheme="blue"
+                      aria-label="Edit list"
+                      onClick={(e) => {
+                        console.log('Edit button clicked for list:', list.id);
+                        e.stopPropagation();
+                        onEditList(list.id);
+                      }}
+                    />
                   </HStack>
                 </VStack>
               </CardBody>
