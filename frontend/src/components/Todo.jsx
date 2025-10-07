@@ -11,19 +11,17 @@ import {
   useDisclosure,
   Spinner,
 } from '@chakra-ui/react';
-import { useTodoListsQuery, useTodoItemsQuery, useTodoListQuery, useUpdateTodoListMutation, useUpdateTodoItemMutation } from '../hooks/useTodoQueries';
+import { useTodoListsQuery, useUpdateTodoListMutation, useUpdateTodoItemMutation, useAssignedItemsQuery } from '../hooks/useTodoQueries';
 import { useUsersQuery } from '../hooks/useAuthQuery';
 import PageHeader from './PageHeader.jsx';
 import Card from './dashboard-components/card.jsx';
 import TodoLists from './todo-components/TodoLists.jsx';
-import TodoItems from './todo-components/TodoItems.jsx';
 import TodoListModal from './todo-components/TodoListModal.jsx';
 import TodoItemModal from './todo-components/TodoItemModal.jsx';
+import TodoItemsAssignedToMe from './todo-components/TodoItemsAssignedToMe.jsx';
 
 const Todo = () => {
-  // State for selected list
-  const [selectedList, setSelectedList] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItemAssignedToMe, setSelectedItemAssignedToMe] = useState(null);
 
   // State for editing list
   const [editingList, setEditingList] = useState(null);
@@ -35,32 +33,21 @@ const Todo = () => {
   const editListModal = useDisclosure();
   const editItemModal = useDisclosure();
 
-  // Fetch only current user's todo lists (based on authentication)
+  // Fetch current user's todo lists
   const { data: todoLists, isLoading, error } = useTodoListsQuery();
 
   // Fetch all users
   const { data: users } = useUsersQuery();
 
-  // Fetch all todo items (independent of selected list)
-  const { data: todoItems, isLoading: itemsLoading } = useTodoItemsQuery({});
-
-  // Fetch individual list details for editing
-  const { data: listDetails } = useTodoListQuery(editingList);
+  // Fetch all todo items assigned to me
+  const { data: todoItemsAssignedToMe, isLoading: itemsAssignedToMeLoading } = useAssignedItemsQuery();
 
   // Update mutation
   const updateListMutation = useUpdateTodoListMutation();
   const updateItemMutation = useUpdateTodoItemMutation();
 
-  // Update form when listDetails is loaded
-  React.useEffect(() => {
-    if (listDetails) {
-      setEditListForm({
-        items: listDetails.items || []
-      });
-    }
-  }, [listDetails]);
 
-// Edit handlers
+  // Edit handlers
   const handleEditList = (listId) => {
     setEditingList(listId);
     editListModal.onOpen();
@@ -103,11 +90,6 @@ const Todo = () => {
     }
   };
 
-//   console.log('Todo lists data:', todoLists);
-//   console.log('Number of todo lists:', todoLists?.length || 0);
-//   console.log('Selected list:', selectedList);
-//   console.log('Todo items for selected list:', todoItems);
-  console.log('Query params being sent:', selectedList ? { todolist: selectedList.id } : {});
 
   return (
     <Box>
@@ -127,33 +109,32 @@ const Todo = () => {
         </Box>
       )}
 
-      {/* Three Column Layout: Todo Lists (2 cols) + Todo Items (1 col) */}
+      {/* Two Column Layout: Todo Lists (with expanded items) + Assigned Items */}
       {!isLoading && !error && (
         <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: 4, md: 6 }}>
-          {/* Todo Lists Columns */}
+          {/* Todo Lists with expandable items */}
           <GridItem colSpan={{ base: 12, md: 8 }}>
             <Card>
               <TodoLists
                 todoLists={todoLists}
-                selectedList={selectedList}
-                onListSelect={setSelectedList}
                 loading={isLoading}
                 error={error}
                 onEditList={handleEditList}
+                onEditItem={handleEditItem}
               />
             </Card>
           </GridItem>
 
-          {/* Todo Items Column */}
+          {/* Todo Items assigned to me Column */}
           <GridItem colSpan={{ base: 12, md: 4 }}>
             <Card>
-              <TodoItems
-                todoItems={todoItems}
-                loading={itemsLoading}
+              <TodoItemsAssignedToMe
+                todoItems={todoItemsAssignedToMe}
+                loading={itemsAssignedToMeLoading}
                 error={null}
-                selectedItem={selectedItem}
-                onSelectItem={setSelectedItem}
-                onEditItem={handleEditItem}
+                selectedItem={selectedItemAssignedToMe}
+                onSelectItem={setSelectedItemAssignedToMe}
+                // onEditItem={handleEditItem}
               />
             </Card>
           </GridItem>
@@ -183,7 +164,8 @@ const Todo = () => {
         isEditing={!!editingItem}
         users={users}
       />
-    </Box>
+
+          </Box>
   );
 };
 

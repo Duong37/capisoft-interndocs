@@ -35,9 +35,9 @@ class IsOwnerOrAdmin(BasePermission):
             return obj.owner == user
 
         # For TodoItem, check if user is the owner of any parent TodoList (ManyToMany)
-        if hasattr(obj, 'todolists'):
+        if hasattr(obj, 'lists'):
             # Check if user owns any of the TodoLists this item belongs to
-            return obj.todolists.filter(owner=user).exists()
+            return obj.lists.filter(owner=user).exists()
 
         return False
 
@@ -68,8 +68,8 @@ class IsOwnerOrAdminOrCreateOnly(BasePermission):
         if hasattr(obj, 'owner'):
             return obj.owner == user
 
-        if hasattr(obj, 'todolists'):
+        if hasattr(obj, 'lists'):
             # Check if user owns any of the TodoLists this item belongs to
-            return obj.todolists.filter(owner=user).exists()
+            return obj.lists.filter(owner=user).exists()
 
         return False

@@ -89,6 +89,28 @@ export const useCreateTodoItemMutation = () => {
   });
 };
 
+export const useCreateTodoItemInListMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ itemData, todolistId }) => todoService.createTodoItemInList(itemData, todolistId),
+    onSuccess: (newItem, variables) => {
+      // Targeted cache updates for better performance
+      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
+
+      if (variables?.todolistId) {
+        queryClient.invalidateQueries({ queryKey: ['todolists', variables.todolistId] });
+        queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      }
+
+      // Also refresh assigned items if the new item has an assignee
+      if (newItem?.assignee) {
+        queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'] });
+      }
+    },
+  });
+};
+
 export const useUpdateTodoItemMutation = () => {
   const queryClient = useQueryClient();
 

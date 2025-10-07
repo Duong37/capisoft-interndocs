@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Get fresh admin bearer token and save to JSON file
-OUTPUT_FILE="fresh_bearer_token.json"
+OUTPUT_FILE="user_fresh_bearer_token.json"
 
 curl -X POST "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCwDWMDUlKvdMlSYyYh5HypNp38a984rko" \
 -H "Content-Type: application/json" \
 -d '{
-  "email": "admin123@gmail.com",
-  "password": "qwerty",
+  "email": "test-user-123@yahoo.com",
+  "password": "111111",
   "returnSecureToken": true
 }' | jq '.' > "$OUTPUT_FILE"
 
