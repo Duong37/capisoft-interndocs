@@ -12,7 +12,8 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import Card from '../dashboard-components/card.jsx';
-import { useCreateTodoItemInListMutation } from '../../hooks/useTodoQueries';
+import { useCreateTodoItemInListMutation, useDeleteTodoItemMutation, useUpdateTodoItemMutation } from '../../hooks/useTodoQueries';
+import { useUsersQuery } from '../../hooks/useAuthQuery';
 
 const TodoItems = ({
   todoItems,
@@ -20,14 +21,56 @@ const TodoItems = ({
   onSelectItem,
   selectedItem,
   error,
-  onEditItem,
-  selectedListId // New prop to know which list we're adding to
+  selectedListId // To know which list we're adding to or removing from
 }) => {
-  const [isAddingItem, setIsAddingItem] = useState(false);
-  const [newItemForm, setNewItemForm] = useState({ title: '', description: '' });
 
-  // Use our custom mutation hook
+  const { data: users } = useUsersQuery();
+
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [newItemForm, setNewItemForm] = useState({ title: '', description: '', status: 'PENDING', assignee: '' });
+
+  // State for editing item
+  const [editingItem, setEditingItem] = useState(null);
+  const [editItemForm, setEditItemForm] = useState({ title: '', description: '', status: 'PENDING', assignee: '' });
+
+  // Mutations
   const createItemInListMutation = useCreateTodoItemInListMutation();
+  const deleteItemMutation = useDeleteTodoItemMutation();
+  const updateItemMutation = useUpdateTodoItemMutation();
+
+  // Handle editing an item
+  const handleEditItem = (itemId) => {
+    const itemToEdit = todoItems.find(item => item.id === itemId);
+    if (itemToEdit) {
+      setEditingItem(itemId);
+      setEditItemForm({
+        title: itemToEdit.title,
+        description: itemToEdit.description || '',
+        status: itemToEdit.status,
+        assignee: itemToEdit.assignee || ''
+      });
+    }
+  };
+
+  const handleUpdateItem = async () => {
+    if (!editingItem) return;
+
+    try {
+      await updateItemMutation.mutateAsync({
+        id: editingItem,
+        data: editItemForm
+      });
+      setEditingItem(null);
+      setEditItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
+    } catch (error) {
+      console.error('Failed to update item:', error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setEditItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
+  };
 
   // Handle adding a new item
   const handleAddItem = () => {
@@ -36,6 +79,12 @@ const TodoItems = ({
       return;
     }
     setIsAddingItem(true);
+    setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    await deleteItemMutation.mutateAsync(itemId);
+    setIsAddingItem(false);
     setNewItemForm({ title: '', description: '', status: 'PENDING' });
   };
 
@@ -50,14 +99,15 @@ const TodoItems = ({
         itemData: {
           title: newItemForm.title.trim(),
           description: newItemForm.description,
-          status: newItemForm.status
+          status: newItemForm.status,
+          assignee: newItemForm.assignee
         },
         todolistId: selectedListId
       });
 
       // Reset form on success
       setIsAddingItem(false);
-      setNewItemForm({ title: '', description: '', status: 'PENDING' });
+      setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
     } catch (error) {
       console.error('Failed to create item:', error);
     }
@@ -65,9 +115,9 @@ const TodoItems = ({
 
   const handleCancelAdd = () => {
     setIsAddingItem(false);
-    setNewItemForm({ title: '', description: '', status: 'PENDING' });
+    setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
   };
-
+  
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" py={8}>
@@ -86,26 +136,33 @@ const TodoItems = ({
 
   return (
     <>
-      <HStack justify="space-between" align="center" mb={4}>
-        <Text
-          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-          fontWeight={500}
-          fontStyle="normal"
-          fontSize="18px"
-          lineHeight="160%"
-          letterSpacing="0"
-          color="gray.700"
-        >
-          Todo Items ({todoItems?.length || 0})
-        </Text>
-        {!isAddingItem ? (
-          <Button size="sm" colorScheme="blue" onClick={handleAddItem}>
-            Add Item
-          </Button>
-        ) : null}
+      <VStack align="stretch" mb={4}>
+        <HStack justify="space-between" align="center">
+            <Text
+            fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+            fontWeight={500}
+            fontStyle="normal"
+            fontSize="18px"
+            lineHeight="160%"
+            letterSpacing="0"
+            color="gray.700"
+            >
+            Todo Items ({todoItems?.length || 0})
+            </Text>
+            {!isAddingItem ? (
+            <Button size="sm" colorScheme="blue" onClick={handleAddItem}>
+                Add Item
+            </Button>
+            ) : null}
+        </HStack>
+
+        {/* Form for adding a new todo item */}
         {isAddingItem && (
           <VStack align="stretch">
+            <Text fontWeight="medium" mb={2}>Title</Text>
             <Input placeholder="Title" value={newItemForm.title} onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value })} />
+            <Text fontWeight="medium" mb={2}>Description</Text>
+            <Textarea placeholder="Description" value={newItemForm.description} onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })} />
             <Text fontWeight="medium" mb={2}>Status</Text>
             <select
               value={newItemForm.status}
@@ -122,8 +179,29 @@ const TodoItems = ({
               <option value="IN_PROGRESS">In Progress</option>
               <option value="DONE">Done</option>
             </select>
-            <Text fontWeight="medium" mb={2}>Description</Text>
-            <Textarea placeholder="Description" value={newItemForm.description} onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })} />
+            <Text fontWeight="medium" mb={2}>Assignee</Text>
+            <select
+              value={newItemForm.assignee}
+              onChange={(e) => {
+                // console.log('Selected assignee:', e.target.value);
+                setNewItemForm({ ...newItemForm, assignee: e.target.value });
+              }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
+                fontSize: '14px'
+              }}
+            >
+              <option value="">Select assignee</option>
+              {users?.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.first_name} {user.last_name}
+                </option>
+              ))}
+            </select>
+
             <HStack spacing={2}>
               <Button
                 size="sm"
@@ -145,29 +223,20 @@ const TodoItems = ({
             </HStack>
           </VStack>
         )}
-      </HStack>
-      <Text
-        fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-        fontWeight={400}
-        fontSize="12px"
-        lineHeight="160%"
-        color="gray.500"
-        mb={4}
-      >
-        Items that are in my todo lists.
-      </Text>
+      </VStack>
+      
+      {/* List of todo items */}
       <VStack align="stretch">
         {todoItems?.length > 0 ? (
-          todoItems.map((item, i) => (
+          todoItems.map((item) => (
             <Fragment key={item.id}>
               <HStack
                 justify="space-between"
                 py={1.5}
-                pb={selectedItem?.id === item.id ? 2 : (i === todoItems.length - 1 ? 0 : 1.5)}
                 cursor="pointer"
                 _hover={{ bg: "gray.50" }}
                 borderRadius="md"
-                onClick={() => onSelectItem(item)}
+                onClick={() => onSelectItem(selectedItem?.id === item.id ? null : item)}
                 bg={selectedItem?.id === item.id ? "gray.50" : "transparent"}
                 px={2}
               >
@@ -176,113 +245,186 @@ const TodoItems = ({
                     {item.title}
                   </Text>
                 </Box>
-                <HStack spacing={2} align="center">
-                  <Text
-                    fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-                    fontWeight={500}
-                    fontStyle="medium"
-                    fontSize="12px"
-                    lineHeight="160%"
-                    letterSpacing="0"
-                    textAlign="right"
-                    color="gray.500"
-                  >
-                    {item.last_modified}
-                  </Text>
-                  <IconButton
-                    size="xs"
-                    variant="ghost"
-                    colorScheme="blue"
-                    aria-label="Edit item"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEditItem(item.id);
-                    }}
-                  />
-                </HStack>
               </HStack>
 
               {/* Selected Item Expanded View - Inline */}
               {selectedItem?.id === item.id && (
                 <Card w="full" border="1px solid" borderColor="gray.200" mb={2}>
                   <VStack spacing={4} align="stretch">
-                    {/* Header */}
-                    <HStack justify="space-between" align="start">
-                      <VStack align="start" spacing={1} flex="1">
-                        <Text fontSize="lg" fontWeight="semibold" color="gray.900">
-                          {selectedItem.title}
-                        </Text>
-                        <HStack spacing={2}>
-                          <Badge
-                            fontSize="xs"
-                          >
-                            {selectedItem.status}
-                          </Badge>
-                          {selectedItem.assignee && (
-                            <Badge colorScheme="purple" fontSize="xs">
-                              {selectedItem.assignee}
-                            </Badge>
-                          )}
-                        </HStack>
-                      </VStack>
-                      <IconButton
-                        size="sm"
-                        variant="ghost"
-                        aria-label="Close expanded view"
-                        onClick={() => onSelectItem(null)}
-                      />
-                    </HStack>
-
-                    <Box borderBottomWidth="1px" borderColor="gray.200" />
-
-                    {/* Description */}
-                    {selectedItem.description && (
-                      <Box>
-                        <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                          Description
-                        </Text>
-                        <Text fontSize="sm" color="gray.600" lineHeight="1.5">
-                          {selectedItem.description}
-                        </Text>
-                      </Box>
-                    )}
-
-                    {/* Details Grid */}
-                    <VStack spacing={3} align="stretch">
-
-                      <HStack justify="space-between" fontSize="sm">
-                        <Text color="gray.500">Created:</Text>
-                        <Text color="gray.700">
-                          {selectedItem.created_at}
-                        </Text>
-                      </HStack>
-
-                      {selectedItem.last_modified !== selectedItem.created_at && (
-                        <HStack justify="space-between" fontSize="sm">
-                          <Text color="gray.500">Modified:</Text>
-                          <Text color="gray.700">
-                            {selectedItem.last_modified}
+                    {editingItem === selectedItem.id ? (
+                      // Edit Form
+                      <>
+                        {/* Edit Header */}
+                        <HStack justify="space-between" align="start">
+                          <Text fontSize="lg" fontWeight="semibold" color="gray.900">
+                            Edit Item
                           </Text>
+                          <Button
+                            size="xs"
+                            colorScheme="red"
+                            onClick={() => handleDeleteItem(selectedItem?.id)}
+                          >
+                            Delete Item
+                          </Button>
                         </HStack>
-                      )}
 
-                      <HStack justify="space-between" fontSize="sm">
-                        <Text color="gray.500">ID:</Text>
-                        <Text color="gray.700" fontFamily="mono" fontSize="xs">
-                          {selectedItem.id}
-                        </Text>
-                      </HStack>
-                    </VStack>
+                        <Box borderBottomWidth="1px" borderColor="gray.200" />
 
-                    {/* Action Button */}
-                    <Button
-                      size="sm"
-                      colorScheme="blue"
-                      onClick={() => onEditItem(selectedItem.id)}
-                      alignSelf="flex-start"
-                    >
-                      Edit Item
-                    </Button>
+                        {/* Edit Form Fields */}
+                        <VStack align="stretch">
+                          <Text fontWeight="medium" mb={2}>Title</Text>
+                          <Input
+                            placeholder="Title"
+                            value={editItemForm.title}
+                            onChange={(e) => setEditItemForm({ ...editItemForm, title: e.target.value })}
+                          />
+
+                          <Text fontWeight="medium" mb={2}>Description</Text>
+                          <Textarea
+                            placeholder="Description"
+                            value={editItemForm.description}
+                            onChange={(e) => setEditItemForm({ ...editItemForm, description: e.target.value })}
+                          />
+
+                          <Text fontWeight="medium" mb={2}>Status</Text>
+                          <select
+                            value={editItemForm.status}
+                            onChange={(e) => setEditItemForm({ ...editItemForm, status: e.target.value })}
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              fontSize: '14px'
+                            }}
+                          >
+                            <option value="PENDING">Pending</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="DONE">Done</option>
+                          </select>
+
+                          <Text fontWeight="medium" mb={2}>Assignee</Text>
+                          <select
+                            value={editItemForm.assignee}
+                            onChange={(e) => setEditItemForm({ ...editItemForm, assignee: e.target.value })}
+                            style={{
+                              width: '100%',
+                              padding: '8px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              fontSize: '14px'
+                            }}
+                          >
+                            <option value="">Select assignee</option>
+                            {users?.map((user) => (
+                              <option key={user.id} value={user.id}>
+                                {user.first_name} {user.last_name}
+                              </option>
+                            ))}
+                          </select>
+
+                          <HStack spacing={2}>
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              onClick={handleUpdateItem}
+                              isLoading={updateItemMutation.isPending}
+                              isDisabled={!editItemForm.title.trim() || updateItemMutation.isPending}
+                            >
+                              Update Item
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelEdit}
+                              isDisabled={updateItemMutation.isPending}
+                            >
+                              Cancel
+                            </Button>
+                          </HStack>
+                        </VStack>
+                      </>
+                    ) : (
+                      // View Mode
+                      <>
+                        {/* Header */}
+                        <HStack justify="space-between" align="start">
+                          <VStack align="start" spacing={1} flex="1">
+                            <HStack justify="space-between" align="start" w="full">
+                                <Text fontSize="lg" fontWeight="semibold" color="gray.900">
+                                {selectedItem.title}
+                                </Text>
+                                <Button
+                                    size="xs"
+                                    colorScheme="red"
+                                    onClick={() => handleDeleteItem(selectedItem?.id)}
+                                >
+                                    Delete Item
+                                </Button>
+                            </HStack>
+                            <HStack spacing={2}>
+                              <Badge fontSize="xs">
+                                Status: {selectedItem.status}
+                              </Badge>
+                              <Badge fontSize="xs">
+                                Assigned to: {selectedItem.assignee}
+                              </Badge>
+                            </HStack>
+                          </VStack>
+                        </HStack>
+
+                        <Box borderBottomWidth="1px" borderColor="gray.200" />
+
+                        {/* Description */}
+                        {selectedItem.description && (
+                          <Box>
+                            <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
+                              Description:
+                            </Text>
+                            <Text fontSize="sm" color="gray.600" lineHeight="1.5">
+                              {selectedItem.description}
+                            </Text>
+                          </Box>
+                        )}
+
+                        {/* Details Grid */}
+                        <VStack spacing={3} align="stretch">
+
+                          <HStack justify="space-between" fontSize="sm">
+                            <Text color="gray.500">Created:</Text>
+                            <Text color="gray.700">
+                              {selectedItem.created_at}
+                            </Text>
+                          </HStack>
+
+                          {selectedItem.last_modified !== selectedItem.created_at && (
+                            <HStack justify="space-between" fontSize="sm">
+                              <Text color="gray.500">Modified:</Text>
+                              <Text color="gray.700">
+                                {selectedItem.last_modified}
+                              </Text>
+                            </HStack>
+                          )}
+
+                          <HStack justify="space-between" fontSize="sm">
+                            <Text color="gray.500">ID:</Text>
+                            <Text color="gray.700" fontFamily="mono" fontSize="xs">
+                              {selectedItem.id}
+                            </Text>
+                          </HStack>
+                        </VStack>
+
+                        {/* Action Button */}
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          onClick={() => handleEditItem(selectedItem.id)}
+                          alignSelf="flex-start"
+                        >
+                          Edit Item
+                        </Button>
+                      </>
+                    )}
                   </VStack>
                 </Card>
               )}

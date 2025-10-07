@@ -14,15 +14,14 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { useTodoItemsQuery, useDeleteTodoListMutation, useDeleteTodoItemMutation } from '../../hooks/useTodoQueries';
+import { useTodoItemsQuery, useDeleteTodoListMutation, useDeleteTodoItemMutation, useCreateTodoListMutation } from '../../hooks/useTodoQueries';
 import TodoItems from './TodoItems.jsx';
 
 const TodoLists = ({
   todoLists,
   loading,
   error,
-  onEditList,
-  onEditItem
+  onEditList
 }) => {
 
   // Local state for selected list
@@ -36,6 +35,9 @@ const TodoLists = ({
 
   // For selecting an item from the list
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Create list mutation
+  const createListMutation = useCreateTodoListMutation();
 
   // Delete list mutation
   const deleteListMutation = useDeleteTodoListMutation();
@@ -121,6 +123,13 @@ const TodoLists = ({
           <Text color="gray.500" textAlign="center">
             Create your first todo list to get started!
           </Text>
+          <Button
+            size="sm"
+            colorScheme="blue"
+            onClick={() => createListMutation.mutate({})}
+          >
+            Create List
+          </Button>
         </VStack>
       </Box>
     );
@@ -128,7 +137,16 @@ const TodoLists = ({
 
   return (
     <VStack spacing={4} align="stretch">
+      <HStack justify="space-between" align="center" w="full">
       <Heading size="md" mb={2}>My Todo Lists ({todoLists.length})</Heading>
+      <Button
+        size="sm"
+        colorScheme="blue"
+        onClick={() => createListMutation.mutate({})}
+      >
+        Create List
+      </Button>
+      </HStack>
 
       <VStack spacing={4} w="full">
         {todoLists.map((list) => (
@@ -149,9 +167,6 @@ const TodoLists = ({
                     {`Todo List ${todoLists.findIndex(l => l.id === list.id) + 1}`}
                   </Heading>
                 </HStack>
-                <Text noOfLines={2} color="gray.600" fontSize="sm" flex="1">
-                  {list.description || 'No description'}
-                </Text>
                 <HStack justify="space-between" w="full" pt={2}>
                   <HStack spacing={2}>
                     <Badge colorScheme="blue" fontSize="xs">
@@ -180,20 +195,13 @@ const TodoLists = ({
                         </Heading>
                         <Button
                           size="xs"
-                          variant="ghost"
                           onClick={() => handleDeleteList()}
                           colorScheme="red"
                         >
                           Delete List
                         </Button>
                       </HStack>
-                      <Text color="gray.600" fontSize="sm">
-                        {selectedList.description || 'No description'}
-                      </Text>
                       <VStack spacing={2} align="start">
-                        <Badge colorScheme="blue" fontSize="sm">
-                          {selectedListItems?.length || 0} items
-                        </Badge>
                         <Badge colorScheme="gray" fontSize="sm">
                           ID: {selectedList.id}
                         </Badge>
@@ -205,12 +213,6 @@ const TodoLists = ({
                         </Badge>
                       </VStack>
                     </VStack>
-                    <IconButton
-                      size="sm"
-                      variant="ghost"
-                      aria-label="Close expanded view"
-                      onClick={() => setSelectedList(null)}
-                    />
                   </HStack>
 
                   <Box borderBottomWidth="1px" borderColor="gray.200" />
@@ -222,7 +224,6 @@ const TodoLists = ({
                     error={itemsError}
                     selectedItem={selectedItem}
                     onSelectItem={setSelectedItem}
-                    onEditItem={onEditItem}
                     selectedListId={selectedList?.id}
                   />
                 </VStack>
