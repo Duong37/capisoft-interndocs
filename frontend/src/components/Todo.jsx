@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
-  VStack,
-  HStack,
   Text,
-  Button,
-  Heading,
   Grid,
   GridItem,
   Spinner,
+  HStack,
+  Container
 } from '@chakra-ui/react';
 import { useTodoListsQuery, useAssignedItemsQuery } from '../hooks/useTodoQueries';
 import PageHeader from './PageHeader.jsx';
@@ -17,8 +15,6 @@ import TodoLists from './todo-components/TodoLists.jsx';
 import TodoItemsAssignedToMe from './todo-components/TodoItemsAssignedToMe.jsx';
 
 const Todo = () => {
-  const [selectedItemAssignedToMe, setSelectedItemAssignedToMe] = useState(null);
-
   // Fetch current user's todo lists
   const { data: todoLists, isLoading, error } = useTodoListsQuery();
 
@@ -28,7 +24,24 @@ const Todo = () => {
 
   return (
     <Box>
-      <PageHeader title="Todo Lists" />
+      <Container maxW="full" py={{ base: 4, md: 6 }} px={0}>
+        <PageHeader title="Todo Application" />
+
+      <HStack w="full" justify="space-between" align="center" mb="24px">
+        <Text
+          color="black"
+          fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+          fontWeight={500}
+          fontStyle="normal"
+          fontSize="18px"
+          lineHeight="160%"
+          letterSpacing="0"
+          pt="4px"
+          pb="4px"
+        >
+          Todo Lists and Items
+        </Text>
+      </HStack>
 
       {/* Loading state */}
       {isLoading && (
@@ -65,13 +78,12 @@ const Todo = () => {
                 todoItems={todoItemsAssignedToMe}
                 loading={itemsAssignedToMeLoading}
                 error={null}
-                selectedItem={selectedItemAssignedToMe}
-                onSelectItem={setSelectedItemAssignedToMe}
               />
             </Card>
           </GridItem>
         </Grid>
       )}
+      </Container>
     </Box>
   );
 };

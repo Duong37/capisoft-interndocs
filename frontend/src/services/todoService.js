@@ -66,7 +66,7 @@ export const todoService = {
       const createResponse = await api.post('/todoitems/', itemData);
       const newItem = createResponse.data;
 
-      // Step 2: Get current list items to avoid overwriting
+      // Step 2: Get items of the current list
       const listResponse = await api.get(`/todolists/${todolistId}/`);
       const currentItems = listResponse.data.items || [];
 

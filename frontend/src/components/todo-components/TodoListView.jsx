@@ -47,10 +47,10 @@ const TodoListView = ({
                   ID: {selectedList.id}
                 </Badge>
                 <Badge colorScheme="gray" fontSize="sm">
-                  Created: {selectedList.created_at}
+                  Created: {new Date(selectedList.created_at).toLocaleDateString()}
                 </Badge>
                 <Badge colorScheme="gray" fontSize="sm">
-                  Modified: {selectedList.last_modified}
+                  Modified: {new Date(selectedList.last_modified).toLocaleDateString()}
                 </Badge>
               </VStack>
             </VStack>

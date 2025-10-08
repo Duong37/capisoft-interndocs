@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { todoService } from '../services/todoService';
 
 // TodoList queries
+// All todo lists
 export const useTodoListsQuery = (params = {}) => {
   return useQuery({
     queryKey: ['todolists', params],
@@ -10,6 +11,7 @@ export const useTodoListsQuery = (params = {}) => {
   });
 };
 
+// A single todo list
 export const useTodoListQuery = (id) => {
   return useQuery({
     queryKey: ['todolists', id],
@@ -19,6 +21,7 @@ export const useTodoListQuery = (id) => {
   });
 };
 
+// Create a new todo list
 export const useCreateTodoListMutation = () => {
   const queryClient = useQueryClient();
 
@@ -30,6 +33,7 @@ export const useCreateTodoListMutation = () => {
   });
 };
 
+// Update a todo list
 export const useUpdateTodoListMutation = () => {
   const queryClient = useQueryClient();
 
@@ -41,6 +45,7 @@ export const useUpdateTodoListMutation = () => {
   });
 };
 
+// Delete a todo list
 export const useDeleteTodoListMutation = () => {
   const queryClient = useQueryClient();
 
@@ -53,6 +58,7 @@ export const useDeleteTodoListMutation = () => {
 };
 
 // TodoItem queries
+// All todo items
 export const useTodoItemsQuery = (params = {}) => {
   return useQuery({
     queryKey: ['todoitems', params],
@@ -61,6 +67,7 @@ export const useTodoItemsQuery = (params = {}) => {
   });
 };
 
+// A single todo item
 export const useTodoItemQuery = (id) => {
   return useQuery({
     queryKey: ['todoitems', id],
@@ -70,6 +77,7 @@ export const useTodoItemQuery = (id) => {
   });
 };
 
+// All todo items assigned to the current user
 export const useAssignedItemsQuery = () => {
   return useQuery({
     queryKey: ['todoitems', 'assigned_to_me'],
@@ -78,6 +86,7 @@ export const useAssignedItemsQuery = () => {
   });
 };
 
+// Create a new todo item
 export const useCreateTodoItemMutation = () => {
   const queryClient = useQueryClient();
 
@@ -89,6 +98,7 @@ export const useCreateTodoItemMutation = () => {
   });
 };
 
+// Create a new todo item in a todo list
 export const useCreateTodoItemInListMutation = () => {
   const queryClient = useQueryClient();
 
@@ -111,6 +121,7 @@ export const useCreateTodoItemInListMutation = () => {
   });
 };
 
+// Update a todo item
 export const useUpdateTodoItemMutation = () => {
   const queryClient = useQueryClient();
 
@@ -131,6 +142,7 @@ export const useUpdateTodoItemMutation = () => {
   });
 };
 
+// Delete a todo item
 export const useDeleteTodoItemMutation = () => {
   const queryClient = useQueryClient();
 

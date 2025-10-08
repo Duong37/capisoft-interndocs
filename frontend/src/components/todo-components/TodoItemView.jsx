@@ -11,7 +11,8 @@ import {
 const TodoItemView = ({
   selectedItem,
   onEdit,
-  onDelete
+  onDelete,
+  users
 }) => {
   // Handle edit button click
   const handleEdit = () => {
@@ -22,7 +23,7 @@ const TodoItemView = ({
   const handleDelete = () => {
     onDelete(selectedItem.id);
   };
-  
+
   return (
     <VStack spacing={4} align="stretch">
       {/* Header */}
@@ -45,8 +46,20 @@ const TodoItemView = ({
               Status: {selectedItem.status}
             </Badge>
             <Badge fontSize="xs">
-              Assigned to: {selectedItem.assignee}
+              Assigned to: {
+                (() => {
+                  const assignedUser = users?.find(user => user.id === selectedItem.assignee);
+                  return assignedUser
+                    ? `${assignedUser.first_name} ${assignedUser.last_name}`
+                    : 'Unassigned';
+                })()
+              }
             </Badge>
+            {selectedItem.assignee && (
+                <Badge fontSize="xs">
+                  Assignee ID: {selectedItem.assignee}
+                </Badge>
+            )}
           </HStack>
         </VStack>
       </HStack>
@@ -57,7 +70,7 @@ const TodoItemView = ({
       {selectedItem.description && (
         <Box>
           <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-            Description:
+            Description
           </Text>
           <Text fontSize="sm" color="gray.600" lineHeight="1.5">
             {selectedItem.description}
@@ -67,10 +80,14 @@ const TodoItemView = ({
 
       {/* Details Grid */}
       <VStack spacing={3} align="stretch">
+        <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
+          Details
+        </Text>
+
         <HStack justify="space-between" fontSize="sm">
           <Text color="gray.500">Created:</Text>
           <Text color="gray.700">
-            {selectedItem.created_at}
+            {new Date(selectedItem.created_at).toLocaleDateString()} {new Date(selectedItem.created_at).toLocaleTimeString()}
           </Text>
         </HStack>
 
@@ -78,7 +95,7 @@ const TodoItemView = ({
           <HStack justify="space-between" fontSize="sm">
             <Text color="gray.500">Modified:</Text>
             <Text color="gray.700">
-              {selectedItem.last_modified}
+              {new Date(selectedItem.last_modified).toLocaleDateString()} {new Date(selectedItem.last_modified).toLocaleTimeString()}
             </Text>
           </HStack>
         )}

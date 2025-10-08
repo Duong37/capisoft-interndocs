@@ -1,17 +1,14 @@
-import React, { Fragment, useEffect, useCallback } from 'react';
+import React, { Fragment, useEffect} from 'react';
 import {
   VStack,
   HStack,
   Text,
   Heading,
-  Grid,
-  GridItem,
   CardRoot,
   CardBody,
   Badge,
   Box,
-  Button,
-  IconButton,
+  Button
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTodoItemsQuery, useDeleteTodoListMutation, useDeleteTodoItemMutation, useCreateTodoListMutation } from '../../hooks/useTodoQueries';
@@ -168,7 +165,7 @@ const TodoLists = ({
                       {list.items?.length || 0} items
                     </Badge>
                     <Text fontSize="xs" color="gray.500">
-                      Created: {list.created_at}
+                      Created: {new Date(list.created_at).toLocaleDateString()}
                     </Text>
                   </HStack>
                 </HStack>

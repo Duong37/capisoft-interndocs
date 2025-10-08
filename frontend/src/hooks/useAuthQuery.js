@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { authService } from '../services/authService';
 
+// Get the current user
 export const useAuthQuery = () => {
   return useQuery({
     queryKey: ['auth', 'me'],
@@ -11,6 +12,7 @@ export const useAuthQuery = () => {
   });
 };
 
+// Get all users
 export const useUsersQuery = () => {
   return useQuery({
     queryKey: ['users'],

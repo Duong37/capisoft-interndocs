@@ -43,7 +43,12 @@ const TodoItems = ({
   };
 
   const handleDeleteItem = async (itemId) => {
-    await deleteItemMutation.mutateAsync(itemId);
+    const item = todoItems.find(item => item.id === itemId);
+    const confirmMessage = `Are you sure you want to delete item "${item?.title || 'this item'}"? This cannot be undone.`;
+
+    if (window.confirm(confirmMessage)) {
+      await deleteItemMutation.mutateAsync(itemId);
+    }
   };
 
   const handleCancelAdd = () => {
@@ -177,6 +182,7 @@ const TodoItems = ({
                       selectedItem={selectedItem}
                       onEdit={setEditingItem}
                       onDelete={handleDeleteItem}
+                      users={users}
                     />
                   )}
                 </Card>
