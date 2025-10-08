@@ -3,6 +3,7 @@ import { todoService } from '../services/todoService';
 
 // TodoList queries
 // All todo lists
+// Not used anymore since we use useTodoListsInfiniteQuery instead
 export const useTodoListsQuery = (params = {}) => {
   return useQuery({
     queryKey: ['todolists', params],
@@ -12,6 +13,7 @@ export const useTodoListsQuery = (params = {}) => {
 };
 
 // A single todo list
+// Not used since we fetch all todo lists upon loading the todo page
 export const useTodoListQuery = (id) => {
   return useQuery({
     queryKey: ['todolists', id],
@@ -27,13 +29,51 @@ export const useCreateTodoListMutation = () => {
 
   return useMutation({
     mutationFn: todoService.createTodoList,
-    onSuccess: () => {
+    onMutate: async () => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['todolists'] });
+
+      // Snapshot the previous value
+      const previousLists = queryClient.getQueryData(['todolists', 'infinite']);
+
+      // Create optimistic list (backend auto-generates all fields from empty object)
+      const optimisticList = {
+        id: `temp-${Date.now()}`,
+        items: [],
+        created_at: new Date().toISOString(),
+        last_modified: new Date().toISOString(),
+      };
+
+      // Optimistically add the new list to the first page
+      if (previousLists) {
+        queryClient.setQueryData(['todolists', 'infinite'], (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page, index) =>
+              index === 0 ? [optimisticList, ...page] : page
+            )
+          };
+        });
+      }
+
+      return { previousLists };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousLists) {
+        queryClient.setQueryData(['todolists', 'infinite'], context.previousLists);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['todolists'] });
     },
   });
 };
 
 // Update a todo list
+// Not used since we have useCreateTodoItemInListMutation which includes updating the todo list
 export const useUpdateTodoListMutation = () => {
   const queryClient = useQueryClient();
 
@@ -68,6 +108,7 @@ export const useTodoItemsQuery = (params = {}) => {
 };
 
 // A single todo item
+// Not used since we fetch all todo items upon expanding a todo list
 export const useTodoItemQuery = (id) => {
   return useQuery({
     queryKey: ['todoitems', id],
@@ -78,6 +119,7 @@ export const useTodoItemQuery = (id) => {
 };
 
 // All todo items assigned to the current user
+// Not used since we use useAssignedItemsInfiniteQuery instead
 export const useAssignedItemsQuery = () => {
   return useQuery({
     queryKey: ['todoitems', 'assigned_to_me'],
@@ -87,6 +129,7 @@ export const useAssignedItemsQuery = () => {
 };
 
 // Create a new todo item
+// Not used since we use useCreateTodoItemInListMutation which includes creating the todo item
 export const useCreateTodoItemMutation = () => {
   const queryClient = useQueryClient();
 
@@ -99,19 +142,68 @@ export const useCreateTodoItemMutation = () => {
 };
 
 // Create a new todo item in a todo list
+// Essentially create item + update list
 export const useCreateTodoItemInListMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ itemData, todolistId }) => todoService.createTodoItemInList(itemData, todolistId),
-    onSuccess: (newItem, variables) => {
-      // Targeted cache updates for better performance
-      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
+    onMutate: async ({ itemData, todolistId }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['todoitems'] });
+      await queryClient.cancelQueries({ queryKey: ['todolists'] });
 
-      if (variables?.todolistId) {
-        queryClient.invalidateQueries({ queryKey: ['todolists', variables.todolistId] });
-        queryClient.invalidateQueries({ queryKey: ['todolists'] });
+      // Snapshot the previous values
+      const previousItems = queryClient.getQueryData(['todoitems']);
+      const previousLists = queryClient.getQueryData(['todolists', 'infinite']);
+
+      // Create optimistic item with temporary ID
+      const optimisticItemId = `temp-${Date.now()}`;
+      const optimisticItem = {
+        ...itemData,
+        id: optimisticItemId,
+        todolist: todolistId,
+        created_at: new Date().toISOString(),
+        last_modified: new Date().toISOString(),
+      };
+
+      // Optimistically add the new item to items cache
+      if (previousItems) {
+        queryClient.setQueryData(['todoitems'], (old) => [...old, optimisticItem]);
       }
+
+      // Optimistically update the list to include the new item ID
+      if (previousLists) {
+        queryClient.setQueryData(['todolists', 'infinite'], (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map(page =>
+              page.map(list =>
+                list.id === todolistId
+                  ? { ...list, items: [...(list.items || []), optimisticItemId] }
+                  : list
+              )
+            )
+          };
+        });
+      }
+
+      return { previousItems, previousLists, optimisticItem };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousItems) {
+        queryClient.setQueryData(['todoitems'], context.previousItems);
+      }
+      if (context?.previousLists) {
+        queryClient.setQueryData(['todolists', 'infinite'], context.previousLists);
+      }
+    },
+    onSettled: (newItem, error, variables) => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
+      queryClient.invalidateQueries({ queryKey: ['todolists'] });
 
       // Also refresh assigned items if the new item has an assignee
       if (newItem?.assignee) {
