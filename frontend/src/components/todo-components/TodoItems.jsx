@@ -1,122 +1,91 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import {
   Box,
   HStack,
   Text,
   VStack,
   Spinner,
-  IconButton,
-  Badge,
   Button,
-  Input,
-  Textarea,
 } from '@chakra-ui/react';
 import Card from '../dashboard-components/card.jsx';
 import { useCreateTodoItemInListMutation, useDeleteTodoItemMutation, useUpdateTodoItemMutation } from '../../hooks/useTodoQueries';
 import { useUsersQuery } from '../../hooks/useAuthQuery';
+import TodoItemAdd from './TodoItemAdd.jsx';
+import TodoItemView from './TodoItemView.jsx';
+import TodoItemEdit from './TodoItemEdit.jsx';
 
 const TodoItems = ({
-  todoItems,
+  todoItems, // Selected list items
   loading,
-  onSelectItem,
-  selectedItem,
   error,
   selectedListId // To know which list we're adding to or removing from
 }) => {
 
   const { data: users } = useUsersQuery();
 
+  // Item states
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [newItemForm, setNewItemForm] = useState({ title: '', description: '', status: 'PENDING', assignee: '' });
-
-  // State for editing item
+  const [selectedItem, setSelectedItem] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
-  const [editItemForm, setEditItemForm] = useState({ title: '', description: '', status: 'PENDING', assignee: '' });
 
-  // Mutations
+  // Item CRUD Mutations
   const createItemInListMutation = useCreateTodoItemInListMutation();
   const deleteItemMutation = useDeleteTodoItemMutation();
   const updateItemMutation = useUpdateTodoItemMutation();
 
-  // Handle editing an item
-  const handleEditItem = (itemId) => {
-    const itemToEdit = todoItems.find(item => item.id === itemId);
-    if (itemToEdit) {
-      setEditingItem(itemId);
-      setEditItemForm({
-        title: itemToEdit.title,
-        description: itemToEdit.description || '',
-        status: itemToEdit.status,
-        assignee: itemToEdit.assignee || ''
-      });
-    }
-  };
-
-  const handleUpdateItem = async () => {
-    if (!editingItem) return;
-
-    try {
-      await updateItemMutation.mutateAsync({
-        id: editingItem,
-        data: editItemForm
-      });
-      setEditingItem(null);
-      setEditItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
-    } catch (error) {
-      console.error('Failed to update item:', error);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingItem(null);
-    setEditItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
-  };
-
-  // Handle adding a new item
+  // Item CRUD Handlers
   const handleAddItem = () => {
     if (!selectedListId) {
       console.error('No list selected');
       return;
     }
     setIsAddingItem(true);
-    setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
   };
 
   const handleDeleteItem = async (itemId) => {
     await deleteItemMutation.mutateAsync(itemId);
-    setIsAddingItem(false);
-    setNewItemForm({ title: '', description: '', status: 'PENDING' });
-  };
-
-  const handleCreateItem = async () => {
-    if (!newItemForm.title.trim() || !selectedListId) {
-      console.error('Invalid form data');
-      return;
-    }
-
-    try {
-      await createItemInListMutation.mutateAsync({
-        itemData: {
-          title: newItemForm.title.trim(),
-          description: newItemForm.description,
-          status: newItemForm.status,
-          assignee: newItemForm.assignee
-        },
-        todolistId: selectedListId
-      });
-
-      // Reset form on success
-      setIsAddingItem(false);
-      setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
-    } catch (error) {
-      console.error('Failed to create item:', error);
-    }
   };
 
   const handleCancelAdd = () => {
     setIsAddingItem(false);
-    setNewItemForm({ title: '', description: '', status: 'PENDING', assignee: '' });
   };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+  };
+
+  // Handle update item with proper error handling
+  const handleUpdateItem = async (updateData) => {
+
+   await updateItemMutation.mutateAsync(updateData);
+    
+  };
+
+  // Update selected item when todoItems changes (for UI refresh after updates)
+  useEffect(() => {
+    if (selectedItem && todoItems) {
+      const updatedItem = todoItems.find(item => item.id === selectedItem.id);
+      if (updatedItem) {
+        // Compare key fields to see if item actually changed
+        const hasChanged =
+          updatedItem.title !== selectedItem.title ||
+          updatedItem.description !== selectedItem.description ||
+          updatedItem.status !== selectedItem.status ||
+          updatedItem.assignee !== selectedItem.assignee ||
+          updatedItem.last_modified !== selectedItem.last_modified;
+
+        if (hasChanged) {
+          // Update the selected item with the latest data
+          setSelectedItem(updatedItem);
+        }
+      }
+    }
+  }, [todoItems, selectedItem]);
+
+  // Reset selected item when selectedListId changes (e.g., when switching lists)
+  useEffect(() => {
+    setSelectedItem(null);
+  }, [selectedListId]);
   
   if (loading) {
     return (
@@ -158,70 +127,13 @@ const TodoItems = ({
 
         {/* Form for adding a new todo item */}
         {isAddingItem && (
-          <VStack align="stretch">
-            <Text fontWeight="medium" mb={2}>Title</Text>
-            <Input placeholder="Title" value={newItemForm.title} onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value })} />
-            <Text fontWeight="medium" mb={2}>Description</Text>
-            <Textarea placeholder="Description" value={newItemForm.description} onChange={(e) => setNewItemForm({ ...newItemForm, description: e.target.value })} />
-            <Text fontWeight="medium" mb={2}>Status</Text>
-            <select
-              value={newItemForm.status}
-              onChange={(e) => setNewItemForm({ ...newItemForm, status: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0',
-                fontSize: '14px'
-              }}
-            >
-              <option value="PENDING">Pending</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="DONE">Done</option>
-            </select>
-            <Text fontWeight="medium" mb={2}>Assignee</Text>
-            <select
-              value={newItemForm.assignee}
-              onChange={(e) => {
-                // console.log('Selected assignee:', e.target.value);
-                setNewItemForm({ ...newItemForm, assignee: e.target.value });
-              }}
-              style={{
-                width: '100%',
-                padding: '8px',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0',
-                fontSize: '14px'
-              }}
-            >
-              <option value="">Select assignee</option>
-              {users?.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.first_name} {user.last_name}
-                </option>
-              ))}
-            </select>
-
-            <HStack spacing={2}>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={handleCreateItem}
-                isLoading={createItemInListMutation.isLoading}
-                isDisabled={!newItemForm.title.trim() || createItemInListMutation.isLoading}
-              >
-                Create Item
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCancelAdd}
-                isDisabled={createItemInListMutation.isLoading}
-              >
-                Cancel
-              </Button>
-            </HStack>
-          </VStack>
+          <TodoItemAdd
+            selectedListId={selectedListId}
+            users={users}
+            onCreateItem={createItemInListMutation.mutateAsync}
+            onCancel={handleCancelAdd}
+            isLoading={createItemInListMutation.isLoading}
+          />
         )}
       </VStack>
       
@@ -236,7 +148,7 @@ const TodoItems = ({
                 cursor="pointer"
                 _hover={{ bg: "gray.50" }}
                 borderRadius="md"
-                onClick={() => onSelectItem(selectedItem?.id === item.id ? null : item)}
+                onClick={() => setSelectedItem(selectedItem?.id === item.id ? null : item)}
                 bg={selectedItem?.id === item.id ? "gray.50" : "transparent"}
                 px={2}
               >
@@ -247,185 +159,26 @@ const TodoItems = ({
                 </Box>
               </HStack>
 
-              {/* Selected Item Expanded View - Inline */}
+              {/* Selected Item Edit or Expanded View - Inline */}
               {selectedItem?.id === item.id && (
                 <Card w="full" border="1px solid" borderColor="gray.200" mb={2}>
-                  <VStack spacing={4} align="stretch">
-                    {editingItem === selectedItem.id ? (
-                      // Edit Form
-                      <>
-                        {/* Edit Header */}
-                        <HStack justify="space-between" align="start">
-                          <Text fontSize="lg" fontWeight="semibold" color="gray.900">
-                            Edit Item
-                          </Text>
-                          <Button
-                            size="xs"
-                            colorScheme="red"
-                            onClick={() => handleDeleteItem(selectedItem?.id)}
-                          >
-                            Delete Item
-                          </Button>
-                        </HStack>
-
-                        <Box borderBottomWidth="1px" borderColor="gray.200" />
-
-                        {/* Edit Form Fields */}
-                        <VStack align="stretch">
-                          <Text fontWeight="medium" mb={2}>Title</Text>
-                          <Input
-                            placeholder="Title"
-                            value={editItemForm.title}
-                            onChange={(e) => setEditItemForm({ ...editItemForm, title: e.target.value })}
-                          />
-
-                          <Text fontWeight="medium" mb={2}>Description</Text>
-                          <Textarea
-                            placeholder="Description"
-                            value={editItemForm.description}
-                            onChange={(e) => setEditItemForm({ ...editItemForm, description: e.target.value })}
-                          />
-
-                          <Text fontWeight="medium" mb={2}>Status</Text>
-                          <select
-                            value={editItemForm.status}
-                            onChange={(e) => setEditItemForm({ ...editItemForm, status: e.target.value })}
-                            style={{
-                              width: '100%',
-                              padding: '8px',
-                              borderRadius: '6px',
-                              border: '1px solid #e2e8f0',
-                              fontSize: '14px'
-                            }}
-                          >
-                            <option value="PENDING">Pending</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="DONE">Done</option>
-                          </select>
-
-                          <Text fontWeight="medium" mb={2}>Assignee</Text>
-                          <select
-                            value={editItemForm.assignee}
-                            onChange={(e) => setEditItemForm({ ...editItemForm, assignee: e.target.value })}
-                            style={{
-                              width: '100%',
-                              padding: '8px',
-                              borderRadius: '6px',
-                              border: '1px solid #e2e8f0',
-                              fontSize: '14px'
-                            }}
-                          >
-                            <option value="">Select assignee</option>
-                            {users?.map((user) => (
-                              <option key={user.id} value={user.id}>
-                                {user.first_name} {user.last_name}
-                              </option>
-                            ))}
-                          </select>
-
-                          <HStack spacing={2}>
-                            <Button
-                              size="sm"
-                              colorScheme="blue"
-                              onClick={handleUpdateItem}
-                              isLoading={updateItemMutation.isPending}
-                              isDisabled={!editItemForm.title.trim() || updateItemMutation.isPending}
-                            >
-                              Update Item
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={handleCancelEdit}
-                              isDisabled={updateItemMutation.isPending}
-                            >
-                              Cancel
-                            </Button>
-                          </HStack>
-                        </VStack>
-                      </>
-                    ) : (
-                      // View Mode
-                      <>
-                        {/* Header */}
-                        <HStack justify="space-between" align="start">
-                          <VStack align="start" spacing={1} flex="1">
-                            <HStack justify="space-between" align="start" w="full">
-                                <Text fontSize="lg" fontWeight="semibold" color="gray.900">
-                                {selectedItem.title}
-                                </Text>
-                                <Button
-                                    size="xs"
-                                    colorScheme="red"
-                                    onClick={() => handleDeleteItem(selectedItem?.id)}
-                                >
-                                    Delete Item
-                                </Button>
-                            </HStack>
-                            <HStack spacing={2}>
-                              <Badge fontSize="xs">
-                                Status: {selectedItem.status}
-                              </Badge>
-                              <Badge fontSize="xs">
-                                Assigned to: {selectedItem.assignee}
-                              </Badge>
-                            </HStack>
-                          </VStack>
-                        </HStack>
-
-                        <Box borderBottomWidth="1px" borderColor="gray.200" />
-
-                        {/* Description */}
-                        {selectedItem.description && (
-                          <Box>
-                            <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>
-                              Description:
-                            </Text>
-                            <Text fontSize="sm" color="gray.600" lineHeight="1.5">
-                              {selectedItem.description}
-                            </Text>
-                          </Box>
-                        )}
-
-                        {/* Details Grid */}
-                        <VStack spacing={3} align="stretch">
-
-                          <HStack justify="space-between" fontSize="sm">
-                            <Text color="gray.500">Created:</Text>
-                            <Text color="gray.700">
-                              {selectedItem.created_at}
-                            </Text>
-                          </HStack>
-
-                          {selectedItem.last_modified !== selectedItem.created_at && (
-                            <HStack justify="space-between" fontSize="sm">
-                              <Text color="gray.500">Modified:</Text>
-                              <Text color="gray.700">
-                                {selectedItem.last_modified}
-                              </Text>
-                            </HStack>
-                          )}
-
-                          <HStack justify="space-between" fontSize="sm">
-                            <Text color="gray.500">ID:</Text>
-                            <Text color="gray.700" fontFamily="mono" fontSize="xs">
-                              {selectedItem.id}
-                            </Text>
-                          </HStack>
-                        </VStack>
-
-                        {/* Action Button */}
-                        <Button
-                          size="sm"
-                          colorScheme="blue"
-                          onClick={() => handleEditItem(selectedItem.id)}
-                          alignSelf="flex-start"
-                        >
-                          Edit Item
-                        </Button>
-                      </>
-                    )}
-                  </VStack>
+                  {editingItem === selectedItem.id ? (
+                    // Edit Form
+                    <TodoItemEdit
+                      selectedItem={selectedItem}
+                      users={users}
+                      onUpdate={handleUpdateItem}
+                      onCancel={handleCancelEdit}
+                      onDelete={() => handleDeleteItem(selectedItem?.id)}
+                    />
+                  ) : (
+                    // Expanded View Mode
+                    <TodoItemView
+                      selectedItem={selectedItem}
+                      onEdit={setEditingItem}
+                      onDelete={handleDeleteItem}
+                    />
+                  )}
                 </Card>
               )}
             </Fragment>

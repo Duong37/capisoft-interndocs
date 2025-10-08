@@ -116,16 +116,10 @@ export const useUpdateTodoItemMutation = () => {
 
   return useMutation({
     mutationFn: ({ id, data }) => todoService.updateTodoItem(id, data),
-    onSuccess: (data, variables) => {
-      // Before (too broad):
-      // queryClient.invalidateQueries({ queryKey: ['todoitems'] });
-      // queryClient.invalidateQueries({ queryKey: ['todoitems', variables.id] });
-      // queryClient.invalidateQueries({ queryKey: ['todolists'] });
-      // queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'] });
-    
-      // After (targeted):
-      queryClient.invalidateQueries({ queryKey: ['todoitems', variables.id], exact: true });
-    
+    onSuccess: (data) => {
+      // Invalidate all todoitems queries to refresh list views
+      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
+
       if (data?.todolist) {
         // list assignment changed or list aggregates depend on items
         queryClient.invalidateQueries({ queryKey: ['todolists'] });

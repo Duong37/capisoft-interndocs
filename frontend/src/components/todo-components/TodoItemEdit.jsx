@@ -1,0 +1,173 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  HStack,
+  Text,
+  VStack,
+  Button,
+  Input,
+  Textarea,
+} from '@chakra-ui/react';
+
+const TodoItemEdit = ({
+  selectedItem,
+  users,
+  onUpdate,
+  onCancel,
+  onDelete
+}) => {
+  // Initialize form state based on selected item
+  const [editForm, setEditForm] = useState({
+    title: selectedItem?.title || '',
+    description: selectedItem?.description || '',
+    status: selectedItem?.status || 'PENDING',
+    assignee: selectedItem?.assignee || ''
+  });
+
+  // Update form when selected item changes
+  useEffect(() => {
+    if (selectedItem) {
+      setEditForm({
+        title: selectedItem.title,
+        description: selectedItem.description || '',
+        status: selectedItem.status,
+        assignee: selectedItem.assignee || ''
+      });
+    }
+  }, [selectedItem]);
+
+  // Local loading state when submitting the form
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    if (!editForm.title.trim() || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Call the update mutation and wait for completion
+      await onUpdate({
+        id: selectedItem.id,
+        data: editForm
+      });
+
+      // Collapse the form by calling onCancel
+      onCancel();
+    } catch (error) {
+      console.error('Failed to update item:', error);
+      // Don't collapse on error, let user try again
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle form cancellation
+  const handleCancel = () => {
+    setEditForm({
+      title: selectedItem?.title || '',
+      description: selectedItem?.description || '',
+      status: selectedItem?.status || 'PENDING',
+      assignee: selectedItem?.assignee || ''
+    });
+    onCancel();
+  };
+
+  const isValid = editForm.title && editForm.title.trim().length > 0;
+  return (
+    <VStack spacing={4} align="stretch">
+      {/* Edit Header */}
+      <HStack justify="space-between" align="start">
+        <Text fontSize="lg" fontWeight="semibold" color="gray.900">
+          Edit Item
+        </Text>
+        <Button
+          size="xs"
+          colorScheme="red"
+          onClick={onDelete}
+        >
+          Delete Item
+        </Button>
+      </HStack>
+
+      <Box borderBottomWidth="1px" borderColor="gray.200" />
+
+      {/* Edit Form Fields */}
+      <VStack align="stretch">
+        <Text fontWeight="medium" mb={2}>Title</Text>
+        <Input
+          placeholder="Title"
+          value={editForm.title}
+          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+        />
+
+        <Text fontWeight="medium" mb={2}>Description</Text>
+        <Textarea
+          placeholder="Description"
+          value={editForm.description}
+          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+        />
+
+        <Text fontWeight="medium" mb={2}>Status</Text>
+        <select
+          value={editForm.status}
+          onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+          style={{
+            width: '100%',
+            padding: '8px',
+            borderRadius: '6px',
+            border: '1px solid #e2e8f0',
+            fontSize: '14px'
+          }}
+        >
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="DONE">Done</option>
+        </select>
+
+        <Text fontWeight="medium" mb={2}>Assignee</Text>
+        <select
+          value={editForm.assignee}
+          onChange={(e) => setEditForm({ ...editForm, assignee: e.target.value })}
+          style={{
+            width: '100%',
+            padding: '8px',
+            borderRadius: '6px',
+            border: '1px solid #e2e8f0',
+            fontSize: '14px'
+          }}
+        >
+          <option value="">Select assignee</option>
+          {users?.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.first_name} {user.last_name}
+            </option>
+          ))}
+        </select>
+
+        <HStack spacing={2}>
+          <Button
+            size="sm"
+            colorScheme="blue"
+            onClick={handleSubmit}
+            isLoading={isSubmitting}
+            isDisabled={!isValid || isSubmitting}
+          >
+            Update Item
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCancel}
+            isDisabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+        </HStack>
+      </VStack>
+    </VStack>
+  );
+};
+
+export default TodoItemEdit;

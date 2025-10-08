@@ -15,13 +15,12 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTodoItemsQuery, useDeleteTodoListMutation, useDeleteTodoItemMutation, useCreateTodoListMutation } from '../../hooks/useTodoQueries';
-import TodoItems from './TodoItems.jsx';
+import TodoListView from './TodoListView.jsx';
 
 const TodoLists = ({
   todoLists,
   loading,
-  error,
-  onEditList
+  error
 }) => {
 
   // Local state for selected list
@@ -33,16 +32,13 @@ const TodoLists = ({
     selectedList ? { todolist: selectedList.id } : {}
   );
 
-  // For selecting an item from the list
-  const [selectedItem, setSelectedItem] = useState(null);
-
   // Create list mutation
   const createListMutation = useCreateTodoListMutation();
 
   // Delete list mutation
   const deleteListMutation = useDeleteTodoListMutation();
 
-  // Delete item mutation
+  // Delete item mutation (needed for bulk deletion when deleting a list)
   const deleteItemMutation = useDeleteTodoItemMutation();
 
   const handleDeleteList = async () => {
@@ -75,9 +71,8 @@ const TodoLists = ({
     }
   };
 
-  // Reset selected item and selectedListItems when selected list changes
+  // Reset selectedListItems when selected list changes
   useEffect(() => {
-    setSelectedItem(null);
     setSelectedListItems(null);
   }, [selectedList]);
 
@@ -183,52 +178,14 @@ const TodoLists = ({
 
           {/* Expanded List Details - Inline with selected list */}
           {selectedList?.id === list.id && (
-            <CardRoot w="full">
-              <CardBody>
-                <VStack spacing={4} align="stretch">
-                  {/* Expanded List Header */}
-                  <HStack justify="space-between" align="start">
-                    <VStack align="start" spacing={2} flex="1">
-                      <HStack justify="space-between" w="full">
-                        <Heading size="lg">
-                          {`Todo List ${todoLists.findIndex(l => l.id === selectedList.id) + 1}`}
-                        </Heading>
-                        <Button
-                          size="xs"
-                          onClick={() => handleDeleteList()}
-                          colorScheme="red"
-                        >
-                          Delete List
-                        </Button>
-                      </HStack>
-                      <VStack spacing={2} align="start">
-                        <Badge colorScheme="gray" fontSize="sm">
-                          ID: {selectedList.id}
-                        </Badge>
-                        <Badge colorScheme="gray" fontSize="sm">
-                          Created: {selectedList.created_at}
-                        </Badge>
-                        <Badge colorScheme="gray" fontSize="sm">
-                          Modified: {selectedList.last_modified}
-                        </Badge>
-                      </VStack>
-                    </VStack>
-                  </HStack>
-
-                  <Box borderBottomWidth="1px" borderColor="gray.200" />
-
-                  {/* TodoItems Component inside expanded list */}
-                  <TodoItems
-                    todoItems={selectedListItems}
-                    loading={itemsLoading}
-                    error={itemsError}
-                    selectedItem={selectedItem}
-                    onSelectItem={setSelectedItem}
-                    selectedListId={selectedList?.id}
-                  />
-                </VStack>
-              </CardBody>
-            </CardRoot>
+            <TodoListView
+              selectedList={selectedList}
+              todoLists={todoLists}
+              selectedListItems={selectedListItems}
+              itemsLoading={itemsLoading}
+              itemsError={itemsError}
+              onDeleteList={handleDeleteList}
+            />
           )}
           </Fragment>
         ))}
