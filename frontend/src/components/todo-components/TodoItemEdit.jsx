@@ -83,8 +83,10 @@ const TodoItemEdit = ({
           Edit Item
         </Text>
         <Button
-          size="xs"
-          colorScheme="red"
+          size="sm"
+          borderRadius="10px"
+          py="6px"
+          px="12px"
           onClick={onDelete}
         >
           Delete Item
@@ -149,7 +151,9 @@ const TodoItemEdit = ({
         <HStack spacing={2}>
           <Button
             size="sm"
-            colorScheme="blue"
+            borderRadius="10px"
+            py="6px"
+            px="12px"
             onClick={handleSubmit}
             isLoading={isSubmitting}
             isDisabled={!isValid || isSubmitting}
@@ -158,6 +162,9 @@ const TodoItemEdit = ({
           </Button>
           <Button
             size="sm"
+            borderRadius="10px"
+            py="6px"
+            px="12px"
             variant="outline"
             onClick={handleCancel}
             isDisabled={isSubmitting}

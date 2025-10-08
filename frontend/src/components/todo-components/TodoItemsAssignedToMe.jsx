@@ -4,15 +4,21 @@ import {
   HStack,
   Text,
   VStack,
-  Spinner,
+  Heading,
+  Spinner
 } from '@chakra-ui/react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import Card from '../dashboard-components/card.jsx';
 import TodoItemsAssignedToMeView from './TodoItemsAssignedToMeView.jsx';
 
 const TodoItemsAssignedToMe = ({
   todoItems,
   loading,
-  error
+  error,
+  lastItemRef,
+  hasNextPage,
+  isFetching
 }) => {
   // Local state for selected assigned item
   const [selectedItem, setSelectedItem] = useState(null);
@@ -28,9 +34,17 @@ const TodoItemsAssignedToMe = ({
   };
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" py={8}>
-        <Spinner size="xl" />
-      </Box>
+      <>
+        <Skeleton height={24} width={200} mb={2} />
+        <Skeleton height={14} width="100%" mb={4} />
+        <VStack align="stretch">
+          {[...Array(2)].map((_, i) => (
+            <Fragment key={i}>
+              <Skeleton height={20} width="100%" />
+            </Fragment>
+          ))}
+        </VStack>
+      </>
     );
   }
 
@@ -44,18 +58,9 @@ const TodoItemsAssignedToMe = ({
 
   return (
     <>
-      <Text
-        fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-        fontWeight={500}
-        fontStyle="normal"
-        fontSize="18px"
-        lineHeight="160%"
-        letterSpacing="0"
-        color="gray.700"
-        mb={2}
-      >
-        Items Assigned to Me ({todoItems?.length || 0})
-      </Text>
+      <Heading size="md" mb={2}>
+        Todo Items Assigned to Me ({todoItems?.length || 0})
+      </Heading>
       <Text
         fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
         fontWeight={400}
@@ -68,7 +73,7 @@ const TodoItemsAssignedToMe = ({
       </Text>
       <VStack align="stretch">
         {todoItems?.length > 0 ? (
-          todoItems.map((item) => (
+          todoItems.map((item, index) => (
             <Fragment key={item.id}>
               <HStack
                 justify="space-between"
@@ -79,6 +84,7 @@ const TodoItemsAssignedToMe = ({
                 onClick={() => handleSelectItem(item)}
                 bg={selectedItem?.id === item.id ? "gray.50" : "transparent"}
                 px={2}
+                ref={index === todoItems.length - 1 ? lastItemRef : undefined}
               >
                 <Text fontWeight="medium" fontSize="12px" color="gray.800">
                   {item.title}
@@ -101,6 +107,12 @@ const TodoItemsAssignedToMe = ({
             <Text color="gray.500" fontSize="sm" textAlign="center">
               No assigned items found
             </Text>
+          </Box>
+        )}
+        {/* Loading indicator for infinite scroll */}
+        {isFetching && hasNextPage && todoItems?.length > 0 && (
+          <Box py={2} display="flex" justifyContent="center">
+            <Spinner size="sm" />
           </Box>
         )}
       </VStack>

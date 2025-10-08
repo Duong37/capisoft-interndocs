@@ -124,8 +124,14 @@ const TodoItems = ({
             Todo Items ({todoItems?.length || 0})
             </Text>
             {!isAddingItem ? (
-            <Button size="sm" colorScheme="blue" onClick={handleAddItem}>
-                Add Item
+            <Button 
+              size="sm" 
+              borderRadius="10px" 
+              py="6px" 
+              px="12px" 
+              onClick={handleAddItem}
+            >
+              Add Item
             </Button>
             ) : null}
         </HStack>

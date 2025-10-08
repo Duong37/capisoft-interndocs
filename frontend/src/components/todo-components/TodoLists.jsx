@@ -8,8 +8,11 @@ import {
   CardBody,
   Badge,
   Box,
-  Button
+  Button,
+  Spinner
 } from '@chakra-ui/react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { useState } from 'react';
 import { useTodoItemsQuery, useDeleteTodoListMutation, useDeleteTodoItemMutation, useCreateTodoListMutation } from '../../hooks/useTodoQueries';
 import TodoListView from './TodoListView.jsx';
@@ -17,7 +20,10 @@ import TodoListView from './TodoListView.jsx';
 const TodoLists = ({
   todoLists,
   loading,
-  error
+  error,
+  lastItemRef,
+  hasNextPage,
+  isFetching
 }) => {
 
   // Local state for selected list
@@ -82,17 +88,30 @@ const TodoLists = ({
 
   if (loading) {
     return (
-      <VStack spacing={4} w="full">
-        {[...Array(6)].map((_, i) => (
-          <CardRoot key={i} w="full">
-            <CardBody>
-              <VStack spacing={3}>
-                <Box h="20px" bg="gray.200" borderRadius="4px" />
-                <Box h="14px" bg="gray.100" borderRadius="2px" w="60%" />
-              </VStack>
-            </CardBody>
-          </CardRoot>
-        ))}
+      <VStack spacing={4} align="stretch">
+        <HStack justify="space-between" align="center" w="full">
+          <Skeleton height={24} width={200} />
+          <Skeleton height={32} width={100} />
+        </HStack>
+        <VStack spacing={4} w="full">
+          {[...Array(6)].map((_, i) => (
+            <CardRoot key={i} w="full">
+              <CardBody>
+                <VStack align="start" spacing={3}>
+                  <HStack justify="space-between" w="full">
+                    <Skeleton height={20} width={150} />
+                  </HStack>
+                  <HStack justify="space-between" w="full" pt={2}>
+                    <HStack spacing={2}>
+                      <Skeleton height={16} width={60} />
+                      <Skeleton height={12} width={120} />
+                    </HStack>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </CardRoot>
+          ))}
+        </VStack>
       </VStack>
     );
   }
@@ -117,7 +136,9 @@ const TodoLists = ({
           </Text>
           <Button
             size="sm"
-            colorScheme="blue"
+            borderRadius="10px"
+            py="6px"
+            px="12px"
             onClick={() => createListMutation.mutate({})}
           >
             Create List
@@ -133,7 +154,9 @@ const TodoLists = ({
       <Heading size="md" mb={2}>My Todo Lists ({todoLists.length})</Heading>
       <Button
         size="sm"
-        colorScheme="blue"
+        borderRadius="10px"
+        py="6px"
+        px="12px"
         onClick={() => createListMutation.mutate({})}
       >
         Create List
@@ -141,16 +164,18 @@ const TodoLists = ({
       </HStack>
 
       <VStack spacing={4} w="full">
-        {todoLists.map((list) => (
+        {todoLists.map((list, index) => (
           <Fragment key={list.id}>
             <CardRoot
               w="full"
               border={selectedList?.id === list.id ? "2px solid" : "1px solid"}
-              borderColor={selectedList?.id === list.id ? "blue.500" : "gray.200"}
+              borderColor={selectedList?.id === list.id ? "purple.500" : "gray.200"}
               _hover={{ shadow: "md", transform: "translateY(-2px)" }}
               cursor="pointer"
               onClick={() => setSelectedList(selectedList?.id === list.id ? null : list)}
               transition="all 0.2s ease"
+              borderRadius="10px"
+              ref={index === todoLists.length - 1 ? lastItemRef : undefined}
             >
             <CardBody>
               <VStack align="start" spacing={3}>
@@ -186,6 +211,12 @@ const TodoLists = ({
           )}
           </Fragment>
         ))}
+        {/* Loading indicator for infinite scroll */}
+        {isFetching && hasNextPage && (
+          <Box py={4} display="flex" justifyContent="center">
+            <Spinner size="sm" />
+          </Box>
+        )}
       </VStack>
     </VStack>
   );

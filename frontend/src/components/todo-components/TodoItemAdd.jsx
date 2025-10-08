@@ -121,7 +121,9 @@ const TodoItemAdd = ({
       <HStack spacing={2}>
         <Button
           size="sm"
-          colorScheme="blue"
+          borderRadius="10px"
+          py="6px"
+          px="12px"
           onClick={handleSubmit}
           isLoading={isLoading || isSubmitting}
           isDisabled={!isValid || isLoading || isSubmitting}
@@ -130,6 +132,9 @@ const TodoItemAdd = ({
         </Button>
         <Button
           size="sm"
+          borderRadius="10px"
+          py="6px"
+          px="12px"
           variant="outline"
           onClick={handleCancel}
           isDisabled={isLoading || isSubmitting}

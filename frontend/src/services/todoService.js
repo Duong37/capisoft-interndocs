@@ -59,6 +59,14 @@ export const todoService = {
     return response.data;
   },
 
+  // Get paginated items assigned to current user
+  getAssignedItemsPaginated: async (page = 1, limit = 10) => {
+    const response = await api.get('/todoitems/assigned_to_me/', {
+      params: { page, limit }
+    });
+    return response.data;
+  },
+
   // Create a todo item and assign it to a specific list in one operation
   createTodoItemInList: async (itemData, todolistId) => {
     try {

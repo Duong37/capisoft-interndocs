@@ -1,25 +1,80 @@
-import React from 'react';
+import React, { useCallback, useRef, useMemo } from 'react';
 import {
   Box,
   Text,
   Grid,
   GridItem,
-  Spinner,
   HStack,
   Container
 } from '@chakra-ui/react';
-import { useTodoListsQuery, useAssignedItemsQuery } from '../hooks/useTodoQueries';
+import { useTodoListsInfiniteQuery, useAssignedItemsInfiniteQuery } from '../hooks/useTodoQueries';
 import PageHeader from './PageHeader.jsx';
 import Card from './dashboard-components/card.jsx';
 import TodoLists from './todo-components/TodoLists.jsx';
 import TodoItemsAssignedToMe from './todo-components/TodoItemsAssignedToMe.jsx';
 
 const Todo = () => {
-  // Fetch current user's todo lists
-  const { data: todoLists, isLoading, error } = useTodoListsQuery();
+  // Intersection observer refs
+  const todoListsObserver = useRef();
+  const assignedItemsObserver = useRef();
 
-  // Fetch all todo items assigned to me
-  const { data: todoItemsAssignedToMe, isLoading: itemsAssignedToMeLoading } = useAssignedItemsQuery();
+  // Fetch current user's todo lists with infinite scrolling
+  const {
+    data: todoListsData,
+    error: todoListsError,
+    fetchNextPage: fetchNextTodoListsPage,
+    hasNextPage: hasNextTodoListsPage,
+    isFetching: isFetchingTodoLists,
+    isLoading: isLoadingTodoLists
+  } = useTodoListsInfiniteQuery();
+
+  // Fetch all todo items assigned to me with infinite scrolling
+  const {
+    data: assignedItemsData,
+    error: assignedItemsError,
+    fetchNextPage: fetchNextAssignedItemsPage,
+    hasNextPage: hasNextAssignedItemsPage,
+    isFetching: isFetchingAssignedItems,
+    isLoading: isLoadingAssignedItems
+  } = useAssignedItemsInfiniteQuery();
+
+  // Flatten infinite query data
+  const todoLists = useMemo(() => {
+    return todoListsData?.pages.flat() || [];
+  }, [todoListsData]);
+
+  const todoItemsAssignedToMe = useMemo(() => {
+    return assignedItemsData?.pages.flat() || [];
+  }, [assignedItemsData]);
+
+  // Intersection observer callbacks
+  const lastTodoListRef = useCallback(
+    (node) => {
+      if (isLoadingTodoLists) return;
+      if (todoListsObserver.current) todoListsObserver.current.disconnect();
+      todoListsObserver.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextTodoListsPage && !isFetchingTodoLists) {
+          fetchNextTodoListsPage();
+        }
+      });
+      if (node) todoListsObserver.current.observe(node);
+    },
+    [fetchNextTodoListsPage, hasNextTodoListsPage, isFetchingTodoLists, isLoadingTodoLists]
+  );
+
+  const lastAssignedItemRef = useCallback(
+    (node) => {
+      if (isLoadingAssignedItems) return;
+      if (assignedItemsObserver.current) assignedItemsObserver.current.disconnect();
+      assignedItemsObserver.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextAssignedItemsPage && !isFetchingAssignedItems) {
+          fetchNextAssignedItemsPage();
+        }
+      });
+      if (node) assignedItemsObserver.current.observe(node);
+    },
+    [fetchNextAssignedItemsPage, hasNextAssignedItemsPage, isFetchingAssignedItems, isLoadingAssignedItems]
+  );
 
 
   return (
@@ -43,30 +98,28 @@ const Todo = () => {
         </Text>
       </HStack>
 
-      {/* Loading state */}
-      {isLoading && (
-        <Box display="flex" justifyContent="center" py={8}>
-          <Spinner size="xl" />
-        </Box>
-      )}
-
       {/* Error state */}
-      {error && (
+      {(todoListsError || assignedItemsError) && (
         <Box p={4} bg="red.50" borderRadius="md" mb={6}>
-          <Text color="red.600">Error loading todo lists: {error.message}</Text>
+          <Text color="red.600">
+            Error loading data: {todoListsError?.message || assignedItemsError?.message}
+          </Text>
         </Box>
       )}
 
       {/* Two Column Layout: Todo Lists (with expanded items) + Assigned Items */}
-      {!isLoading && !error && (
+      {!todoListsError && !assignedItemsError && (
         <Grid templateColumns={{ base: '1fr', md: 'repeat(12, 1fr)' }} gap={{ base: 4, md: 6 }}>
           {/* Todo Lists with expandable items */}
           <GridItem colSpan={{ base: 12, md: 8 }}>
             <Card>
               <TodoLists
                 todoLists={todoLists}
-                loading={isLoading}
-                error={error}
+                loading={isLoadingTodoLists}
+                error={todoListsError}
+                lastItemRef={lastTodoListRef}
+                hasNextPage={hasNextTodoListsPage}
+                isFetching={isFetchingTodoLists}
               />
             </Card>
           </GridItem>
@@ -76,8 +129,11 @@ const Todo = () => {
             <Card>
               <TodoItemsAssignedToMe
                 todoItems={todoItemsAssignedToMe}
-                loading={itemsAssignedToMeLoading}
-                error={null}
+                loading={isLoadingAssignedItems}
+                error={assignedItemsError}
+                lastItemRef={lastAssignedItemRef}
+                hasNextPage={hasNextAssignedItemsPage}
+                isFetching={isFetchingAssignedItems}
               />
             </Card>
           </GridItem>

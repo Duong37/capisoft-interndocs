@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { todoService } from '../services/todoService';
 
 // TodoList queries
@@ -153,5 +153,44 @@ export const useDeleteTodoItemMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['todolists'] });
       queryClient.invalidateQueries({ queryKey: ['todoitems', 'assigned_to_me'] });
     },
+  });
+};
+
+// Infinite query hooks
+// Infinite todo lists
+export const useTodoListsInfiniteQuery = (params = {}) => {
+  return useInfiniteQuery({
+    queryKey: ['todolists', 'infinite', params],
+    queryFn: ({ pageParam = 1 }) =>
+      todoService.getTodoLists({ ...params, page: pageParam, limit: 10 }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer than 10 items, we've reached the end
+      if (lastPage.length < 10) {
+        return undefined;
+      }
+      // Otherwise, fetch the next page
+      return allPages.length + 1;
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+// Infinite assigned items
+export const useAssignedItemsInfiniteQuery = () => {
+  return useInfiniteQuery({
+    queryKey: ['todoitems', 'assigned_to_me', 'infinite'],
+    queryFn: ({ pageParam = 1 }) =>
+      todoService.getAssignedItemsPaginated(pageParam, 10),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer than 10 items, we've reached the end
+      if (lastPage.length < 10) {
+        return undefined;
+      }
+      // Otherwise, fetch the next page
+      return allPages.length + 1;
+    },
+    staleTime: 1 * 60 * 1000, // 1 minute
   });
 };

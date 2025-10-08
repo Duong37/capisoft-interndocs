@@ -34,8 +34,10 @@ const TodoItemView = ({
               {selectedItem.title}
             </Text>
             <Button
-              size="xs"
-              colorScheme="red"
+              size="sm"
+              borderRadius="10px"
+              py="6px"
+              px="12px"
               onClick={handleDelete}
             >
               Delete Item
@@ -111,7 +113,9 @@ const TodoItemView = ({
       {/* Action Button */}
       <Button
         size="sm"
-        colorScheme="blue"
+        borderRadius="10px"
+        py="6px"
+        px="12px"
         onClick={handleEdit}
         alignSelf="flex-start"
       >

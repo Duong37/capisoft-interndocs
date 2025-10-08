@@ -35,9 +35,11 @@ const TodoListView = ({
                   {`Todo List ${todoLists.findIndex(l => l.id === selectedList.id) + 1}`}
                 </Heading>
                 <Button
-                  size="xs"
+                  size="sm"
                   onClick={handleDelete}
-                  colorScheme="red"
+                  borderRadius="10px"
+                  py="6px"
+                  px="12px"
                 >
                   Delete List
                 </Button>
