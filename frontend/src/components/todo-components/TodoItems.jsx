@@ -8,7 +8,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import Card from '../dashboard-components/card.jsx';
-import { useCreateTodoItemInListMutation, useDeleteTodoItemMutation, useUpdateTodoItemMutation } from '../../hooks/useTodoQueries';
+import { useCreateTodoItemMutation, useDeleteTodoItemMutation, useUpdateTodoItemMutation } from '../../hooks/useTodoQueries';
 import { useUsersQuery } from '../../hooks/useAuthQuery';
 import TodoItemAdd from './TodoItemAdd.jsx';
 import TodoItemView from './TodoItemView.jsx';
@@ -29,7 +29,7 @@ const TodoItems = ({
   const [editingItem, setEditingItem] = useState(null);
 
   // Item CRUD Mutations
-  const createItemInListMutation = useCreateTodoItemInListMutation();
+  const createItemMutation = useCreateTodoItemMutation();
   const deleteItemMutation = useDeleteTodoItemMutation();
   const updateItemMutation = useUpdateTodoItemMutation();
 
@@ -141,9 +141,9 @@ const TodoItems = ({
           <TodoItemAdd
             selectedListId={selectedListId}
             users={users}
-            onCreateItem={createItemInListMutation.mutateAsync}
+            onCreateItem={createItemMutation.mutateAsync}
             onCancel={handleCancelAdd}
-            isLoading={createItemInListMutation.isLoading}
+            isLoading={createItemMutation.isLoading}
           />
         )}
       </VStack>

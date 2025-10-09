@@ -31,9 +31,7 @@ const TodoLists = ({
   const [selectedListItems, setSelectedListItems] = useState(null);
 
   // Fetch todo items for the selected list
-  const { data: currentListItems, isLoading: itemsLoading, error: itemsError } = useTodoItemsQuery(
-    selectedList ? { todolist: selectedList.id } : {}
-  );
+  const { data: currentListItems, isLoading: itemsLoading, error: itemsError } = useTodoItemsQuery(selectedList ? { todolist: selectedList.id } : {});
 
   // Create list mutation
   const createListMutation = useCreateTodoListMutation();
@@ -82,7 +80,9 @@ const TodoLists = ({
   // Sync selectedListItems when currentListItems changes
   useEffect(() => {
     if (currentListItems) {
-      setSelectedListItems(currentListItems);
+      // Extract results from paginated response
+      const items = currentListItems.results || currentListItems;
+      setSelectedListItems(items);
     }
   }, [currentListItems]);
 

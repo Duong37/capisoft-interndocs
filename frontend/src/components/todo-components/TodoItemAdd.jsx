@@ -36,13 +36,11 @@ const TodoItemAdd = ({
     try {
       // Call the create mutation and wait for completion
       await onCreateItem({
-        itemData: {
-          title: newItemForm.title.trim(),
-          description: newItemForm.description,
-          status: newItemForm.status,
-          assignee: newItemForm.assignee
-        },
-        todolistId: selectedListId
+        title: newItemForm.title.trim(),
+        description: newItemForm.description,
+        status: newItemForm.status,
+        assignee: newItemForm.assignee,
+        todolist_id: selectedListId
       });
 
       // Reset form after successful submission

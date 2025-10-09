@@ -67,29 +67,6 @@ export const todoService = {
     return response.data;
   },
 
-  // Create a todo item and assign it to a specific list in one operation
-  createTodoItemInList: async (itemData, todolistId) => {
-    try {
-      // Step 1: Create the todo item
-      const createResponse = await api.post('/todoitems/', itemData);
-      const newItem = createResponse.data;
-
-      // Step 2: Get items of the current list
-      // no need
-      const listResponse = await api.get(`/todolists/${todolistId}/`);
-      const currentItems = listResponse.data.items || [];
-
-      // Step 3: Update the list to include the new item
-      await api.patch(`/todolists/${todolistId}/`, {
-        items: [...currentItems.map(item => item.id || item), newItem.id]
-      });
-
-      return newItem;
-    } catch (error) {
-      console.error('Error in createTodoItemInList:', error);
-      throw error;
-    }
-  },
-};
+  };
 
 export default todoService;

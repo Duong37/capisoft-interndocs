@@ -130,33 +130,23 @@ export const useAssignedItemsQuery = () => {
   });
 };
 
+
 // Create a new todo item
-// Not used since we use useCreateTodoItemInListMutation which includes creating the todo item
 export const useCreateTodoItemMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: todoService.createTodoItem,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todoitems'] });
-    },
-  });
-};
-
-// Create a new todo item in a todo list
-// Essentially create item + update list
-export const useCreateTodoItemInListMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ itemData, todolistId }) => todoService.createTodoItemInList(itemData, todolistId),
-    onMutate: async ({ itemData, todolistId }) => {
+    onMutate: async (itemData) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['todoitems'] });
       await queryClient.cancelQueries({ queryKey: ['todolists'] });
 
       // Snapshot the previous values
       const previousItems = queryClient.getQueryData(['todoitems']);
+      const previousListItems = itemData.todolist_id
+        ? queryClient.getQueryData(['todoitems', { todolist: itemData.todolist_id }])
+        : null;
       const previousLists = queryClient.getQueryData(['todolists', 'infinite']);
 
       // Create optimistic item with temporary ID
@@ -164,18 +154,42 @@ export const useCreateTodoItemInListMutation = () => {
       const optimisticItem = {
         ...itemData,
         id: optimisticItemId,
-        todolist: todolistId,
         created_at: new Date().toISOString(),
         last_modified: new Date().toISOString(),
       };
 
-      // Optimistically add the new item to items cache
+      // Optimistically add the new item to general items cache
       if (previousItems) {
-        queryClient.setQueryData(['todoitems'], (old) => [...old, optimisticItem]);
+        queryClient.setQueryData(['todoitems'], (old) => {
+          if (!old || !Array.isArray(old)) return [optimisticItem];
+          return [...old, optimisticItem];
+        });
       }
 
-      // Optimistically update the list to include the new item ID
-      if (previousLists) {
+      // Optimistically add the new item to the specific todolist items cache
+      if (itemData.todolist_id) {
+        queryClient.setQueryData(['todoitems', { todolist: itemData.todolist_id }], (old) => {
+          if (!old) {
+            return { count: 1, next: null, previous: null, results: [optimisticItem] };
+          }
+
+          if (Array.isArray(old)) {
+            // Legacy format - convert to paginated
+            return { count: old.length + 1, next: null, previous: null, results: [...old, optimisticItem] };
+          }
+
+          // Paginated format - add to existing results
+          const existingResults = old.results || [];
+          return {
+            ...old,
+            count: existingResults.length + 1,
+            results: [...existingResults, optimisticItem]
+          };
+        });
+      }
+
+      // If todolist_id is provided, optimistically update the list
+      if (itemData.todolist_id && previousLists) {
         queryClient.setQueryData(['todolists', 'infinite'], (old) => {
           if (!old) return old;
           return {
@@ -183,7 +197,7 @@ export const useCreateTodoItemInListMutation = () => {
             pages: old.pages.map(page => ({
               ...page,
               results: page.results.map(list =>
-                list.id === todolistId
+                list.id === itemData.todolist_id
                   ? { ...list, items: [...(list.items || []), optimisticItemId] }
                   : list
               )
@@ -192,21 +206,32 @@ export const useCreateTodoItemInListMutation = () => {
         });
       }
 
-      return { previousItems, previousLists, optimisticItem };
+      return { previousItems, previousListItems, previousLists, optimisticItem };
     },
-    onError: (_err, _variables, context) => {
+    onError: (_err, variables, context) => {
       // Rollback on error
       if (context?.previousItems) {
         queryClient.setQueryData(['todoitems'], context.previousItems);
+      }
+      if (context?.previousListItems) {
+        const todolistId = variables?.todolist_id;
+        if (todolistId) {
+          queryClient.setQueryData(['todoitems', { todolist: todolistId }], context.previousListItems);
+        }
       }
       if (context?.previousLists) {
         queryClient.setQueryData(['todolists', 'infinite'], context.previousLists);
       }
     },
-    onSettled: (newItem, _error, _variables) => {
+    onSettled: (newItem, _error, variables) => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['todoitems'] });
       queryClient.invalidateQueries({ queryKey: ['todolists'] });
+
+      // Also refresh the specific todolist items if todolist_id was provided
+      if (variables?.todolist_id) {
+        queryClient.invalidateQueries({ queryKey: ['todoitems', { todolist: variables.todolist_id }] });
+      }
 
       // Also refresh assigned items if the new item has an assignee
       if (newItem?.assignee) {
