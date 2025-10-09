@@ -36,7 +36,7 @@ class TodoItemViewSet(viewsets.ModelViewSet):
         Get all TodoItems assigned to the current user with pagination.
         """
         user = request.user
-        assigned_tasks = TodoItem.objects.filter(assignee=user).order_by('-created_at')
+        assigned_tasks = TodoItem.objects.filter(assignee=user).order_by('created_at')
 
         # Apply pagination
         paginator = PageNumberPagination()

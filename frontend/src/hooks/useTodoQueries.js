@@ -143,10 +143,7 @@ export const useCreateTodoItemMutation = () => {
       await queryClient.cancelQueries({ queryKey: ['todolists'] });
 
       // Snapshot the previous values
-      const previousItems = queryClient.getQueryData(['todoitems']);
-      const previousListItems = itemData.todolist_id
-        ? queryClient.getQueryData(['todoitems', { todolist: itemData.todolist_id }])
-        : null;
+      const previousListItems = itemData.todolist_id;
       const previousLists = queryClient.getQueryData(['todolists', 'infinite']);
 
       // Create optimistic item with temporary ID
@@ -158,14 +155,6 @@ export const useCreateTodoItemMutation = () => {
         last_modified: new Date().toISOString(),
       };
 
-      // Optimistically add the new item to general items cache
-      if (previousItems) {
-        queryClient.setQueryData(['todoitems'], (old) => {
-          if (!old || !Array.isArray(old)) return [optimisticItem];
-          return [...old, optimisticItem];
-        });
-      }
-
       // Optimistically add the new item to the specific todolist items cache
       if (itemData.todolist_id) {
         queryClient.setQueryData(['todoitems', { todolist: itemData.todolist_id }], (old) => {
@@ -173,25 +162,20 @@ export const useCreateTodoItemMutation = () => {
             return { count: 1, next: null, previous: null, results: [optimisticItem] };
           }
 
-          if (Array.isArray(old)) {
-            // Legacy format - convert to paginated
-            return { count: old.length + 1, next: null, previous: null, results: [...old, optimisticItem] };
-          }
-
-          // Paginated format - add to existing results
-          const existingResults = old.results || [];
+          // Add to existing paginated results
           return {
             ...old,
-            count: existingResults.length + 1,
-            results: [...existingResults, optimisticItem]
+            count: (old.results?.length || 0) + 1,
+            results: [...(old.results || []), optimisticItem]
           };
         });
       }
 
-      // If todolist_id is provided, optimistically update the list
-      if (itemData.todolist_id && previousLists) {
+      // Optimistically add item ID to the parent list's items array
+      if (itemData.todolist_id) {
         queryClient.setQueryData(['todolists', 'infinite'], (old) => {
           if (!old) return old;
+          
           return {
             ...old,
             pages: old.pages.map(page => ({
@@ -206,13 +190,10 @@ export const useCreateTodoItemMutation = () => {
         });
       }
 
-      return { previousItems, previousListItems, previousLists, optimisticItem };
+      return { previousListItems, previousLists, optimisticItem };
     },
     onError: (_err, variables, context) => {
       // Rollback on error
-      if (context?.previousItems) {
-        queryClient.setQueryData(['todoitems'], context.previousItems);
-      }
       if (context?.previousListItems) {
         const todolistId = variables?.todolist_id;
         if (todolistId) {
