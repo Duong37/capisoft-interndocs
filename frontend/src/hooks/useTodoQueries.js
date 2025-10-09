@@ -44,7 +44,7 @@ export const useCreateTodoListMutation = () => {
         last_modified: new Date().toISOString(),
       };
 
-      // Optimistically add the new list to the first page
+      // Optimistically add the new list to the first page (at the end for chronological order)
       if (previousLists) {
         queryClient.setQueryData(['todolists', 'infinite'], (old) => {
           if (!old) return old;
@@ -52,7 +52,7 @@ export const useCreateTodoListMutation = () => {
             ...old,
             pages: old.pages.map((page, index) =>
               index === 0
-                ? { ...page, results: [optimisticList, ...page.results] }
+                ? { ...page, results: [...page.results, optimisticList] }
                 : page
             )
           };

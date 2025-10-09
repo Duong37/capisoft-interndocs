@@ -13,7 +13,7 @@ class TodoListViewSet(viewsets.ModelViewSet):
         Admin users see all TodoLists, regular users see only their own.
         Ordered by creation date for consistent pagination.
         """
-        qs = TodoList.objects.all().order_by('-created_at')
+        qs = TodoList.objects.all().order_by('created_at')
         user = self.request.user
 
         # Admin users can see all lists
