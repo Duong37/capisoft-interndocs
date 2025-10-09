@@ -75,6 +75,7 @@ export const todoService = {
       const newItem = createResponse.data;
 
       // Step 2: Get items of the current list
+      // no need
       const listResponse = await api.get(`/todolists/${todolistId}/`);
       const currentItems = listResponse.data.items || [];
 

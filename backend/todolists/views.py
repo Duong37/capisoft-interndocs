@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 from .models import TodoList
 from .serializers import TodoListSerializer
 from users.permissions import IsOwnerOrAdmin
@@ -10,8 +11,9 @@ class TodoListViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         Admin users see all TodoLists, regular users see only their own.
+        Ordered by creation date for consistent pagination.
         """
-        qs = TodoList.objects.all()
+        qs = TodoList.objects.all().order_by('-created_at')
         user = self.request.user
 
         # Admin users can see all lists

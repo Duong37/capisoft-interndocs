@@ -41,28 +41,28 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       const { email, password, user_type } = formData;
-      console.log('Frontend registration attempt for email:', email, 'user_type:', user_type);
+      // console.log('Frontend registration attempt for email:', email, 'user_type:', user_type);
+      // console.log('Registering with backend...', user_type === 'ADMIN' ? 'using admin endpoint' : 'using regular endpoint');
 
       // Register with backend using appropriate endpoint based on user type
-      console.log('Registering with backend...', user_type === 'ADMIN' ? 'using admin endpoint' : 'using regular endpoint');
-
       if (user_type === 'ADMIN') {
         await authService.registerAdmin(formData);
       } else {
         await authService.register(formData);
       }
 
-      console.log('Backend registration successful');
+      // console.log('Backend registration successful');
 
       // Sign in with Firebase after successful backend registration
-      console.log('Signing in with Firebase...');
+      // console.log('Signing in with Firebase...');
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Firebase sign-in successful:', userCredential.user.email);
+      
+      // console.log('Firebase sign-in successful:', userCredential.user.email);
       setUser(userCredential.user);
       setIsAuthenticated(true);
 
       // Fetch backend user data
-      console.log('Fetching backend user data...');
+      // console.log('Fetching backend user data...');
       try {
         const backendUserData = await authService.getCurrentUser();
         setBackendUser(backendUserData);

@@ -40,11 +40,25 @@ const Todo = () => {
 
   // Flatten infinite query data
   const todoLists = useMemo(() => {
-    return todoListsData?.pages.flat() || [];
+    if (!todoListsData?.pages) return [];
+
+    // Extract results from paginated response
+    const allLists = [];
+    todoListsData.pages.forEach(page => {
+      allLists.push(...page.results);
+    });
+    return allLists;
   }, [todoListsData]);
 
   const todoItemsAssignedToMe = useMemo(() => {
-    return assignedItemsData?.pages.flat() || [];
+    if (!assignedItemsData?.pages) return [];
+
+    // Extract results from paginated response
+    const allItems = [];
+    assignedItemsData.pages.forEach(page => {
+      allItems.push(...page.results);
+    });
+    return allItems;
   }, [assignedItemsData]);
 
   // Intersection observer callbacks

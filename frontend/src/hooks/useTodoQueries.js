@@ -36,7 +36,7 @@ export const useCreateTodoListMutation = () => {
       // Snapshot the previous value
       const previousLists = queryClient.getQueryData(['todolists', 'infinite']);
 
-      // Create optimistic list (backend auto-generates all fields from empty object)
+      // Create optimistic list for UI
       const optimisticList = {
         id: `temp-${Date.now()}`,
         items: [],
@@ -51,7 +51,9 @@ export const useCreateTodoListMutation = () => {
           return {
             ...old,
             pages: old.pages.map((page, index) =>
-              index === 0 ? [optimisticList, ...page] : page
+              index === 0
+                ? { ...page, results: [optimisticList, ...page.results] }
+                : page
             )
           };
         });
@@ -59,7 +61,7 @@ export const useCreateTodoListMutation = () => {
 
       return { previousLists };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // Rollback on error
       if (context?.previousLists) {
         queryClient.setQueryData(['todolists', 'infinite'], context.previousLists);
@@ -79,7 +81,7 @@ export const useUpdateTodoListMutation = () => {
 
   return useMutation({
     mutationFn: ({ id, data }) => todoService.updateTodoList(id, data),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['todolists', variables.id], exact: true });
     },
   });
@@ -178,20 +180,21 @@ export const useCreateTodoItemInListMutation = () => {
           if (!old) return old;
           return {
             ...old,
-            pages: old.pages.map(page =>
-              page.map(list =>
+            pages: old.pages.map(page => ({
+              ...page,
+              results: page.results.map(list =>
                 list.id === todolistId
                   ? { ...list, items: [...(list.items || []), optimisticItemId] }
                   : list
               )
-            )
+            }))
           };
         });
       }
 
       return { previousItems, previousLists, optimisticItem };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // Rollback on error
       if (context?.previousItems) {
         queryClient.setQueryData(['todoitems'], context.previousItems);
@@ -200,7 +203,7 @@ export const useCreateTodoItemInListMutation = () => {
         queryClient.setQueryData(['todolists', 'infinite'], context.previousLists);
       }
     },
-    onSettled: (newItem, error, variables) => {
+    onSettled: (newItem, _error, _variables) => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['todoitems'] });
       queryClient.invalidateQueries({ queryKey: ['todolists'] });
@@ -254,15 +257,15 @@ export const useTodoListsInfiniteQuery = (params = {}) => {
   return useInfiniteQuery({
     queryKey: ['todolists', 'infinite', params],
     queryFn: ({ pageParam = 1 }) =>
-      todoService.getTodoLists({ ...params, page: pageParam, limit: 10 }),
+      todoService.getTodoLists({ ...params, page: pageParam }),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      // If the last page has fewer than 10 items, we've reached the end
-      if (lastPage.length < 10) {
-        return undefined;
+    getNextPageParam: (lastPage, _allPages, pageParam) => {
+      // Check if there are more pages to fetch
+      if (lastPage.next) {
+        return pageParam + 1;
       }
-      // Otherwise, fetch the next page
-      return allPages.length + 1;
+      // No more pages
+      return undefined;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -275,13 +278,13 @@ export const useAssignedItemsInfiniteQuery = () => {
     queryFn: ({ pageParam = 1 }) =>
       todoService.getAssignedItemsPaginated(pageParam, 10),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      // If the last page has fewer than 10 items, we've reached the end
-      if (lastPage.length < 10) {
-        return undefined;
+    getNextPageParam: (lastPage, _allPages, pageParam) => {
+      // Check if there are more pages to fetch
+      if (lastPage.next) {
+        return pageParam + 1;
       }
-      // Otherwise, fetch the next page
-      return allPages.length + 1;
+      // No more pages
+      return undefined;
     },
     staleTime: 1 * 60 * 1000, // 1 minute
   });
