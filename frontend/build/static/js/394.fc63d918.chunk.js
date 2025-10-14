@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkreact_auth_app=self.webpackChunkreact_auth_app||[]).push([[394],{2394:(a,e,s)=>{s.r(e),s.d(e,{SplashScreenWeb:()=>h});var c=s(5661);class h extends c.E_{async show(a){}async hide(a){}}}}]);
+//# sourceMappingURL=394.fc63d918.chunk.js.map

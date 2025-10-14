@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkreact_auth_app=self.webpackChunkreact_auth_app||[]).push([[537],{2537:(e,t,a)=>{a.r(t),a.d(t,{SafeAreaWeb:()=>r});var s=a(5661);class r extends s.E_{async getSafeAreaInsets(){return{insets:{top:0,left:0,right:0,bottom:0}}}async getStatusBarHeight(){return{statusBarHeight:0}}setImmersiveNavigationBar(){throw this.unimplemented("Method not supported on Web.")}}}}]);
+//# sourceMappingURL=537.31756b10.chunk.js.map

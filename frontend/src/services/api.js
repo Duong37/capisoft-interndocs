@@ -1,12 +1,32 @@
 import axios from 'axios';
 import { auth } from '../firebase';
+import { Capacitor } from '@capacitor/core';
+
+// Determine the API base URL based on the platform
+const getApiBaseURL = () => {
+  const platform = Capacitor.getPlatform();
+  console.log('Running on platform:', platform);
+  
+  // Check if running on native platform (iOS or Android)
+  if (Capacitor.isNativePlatform()) {
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+    console.log('Native platform - Using API URL:', apiUrl);
+    return apiUrl;
+  }
+  
+  // For web, use localhost or environment variable
+  const apiUrl = 'http://127.0.0.1:8000/api';
+  console.log('Web platform - Using API URL:', apiUrl);
+  return apiUrl;
+};
 
 // Create axios instance
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: getApiBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 8000, // 8 second timeout to prevent hanging
 });
 
 // Request interceptor to add Firebase token
@@ -44,7 +64,6 @@ api.interceptors.response.use(
   async (error) => {
     console.log('Error response:', error.config?.url, error.response?.status, error.response?.data);
     console.log('Error details:', JSON.stringify(error.response?.data, null, 2));
-    const originalRequest = error.config;
 
     // Handle 401/403 errors (unauthorized)
     if (error.response?.status === 401 || error.response?.status === 403) {

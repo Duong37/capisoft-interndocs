@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
+console.log('Initializing Firebase...');
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCwDWMDUlKvdMlSYyYh5HypNp38a984rko",
@@ -14,6 +16,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+console.log('Firebase app initialized');
+
 export const auth = getAuth(app);
+console.log('Firebase auth initialized');
 
 export default app;

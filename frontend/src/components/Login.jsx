@@ -21,9 +21,21 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const result = await login(email, password);
-    if (!result.success) {
-      alert(result.error);
+    console.log('Login button clicked, email:', email);
+    
+    try {
+      const result = await login(email, password);
+      console.log('Login result:', result);
+      
+      if (!result.success) {
+        console.error('Login failed:', result.error);
+        alert(result.error);
+      } else {
+        console.log('Login successful');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login error: ' + error.message);
     }
   };
 

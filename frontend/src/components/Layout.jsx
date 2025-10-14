@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Box, VStack, Link, Text, Button, Image, IconButton, useBreakpointValue, Drawer } from "@chakra-ui/react";
 import { Link as RouterLink, useMatch, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useSafeArea } from "../hooks/useSafeArea";
+import { useHaptics } from "../hooks/useHaptics";
 import logoutPng from "../images/logout.png";
 import homePng from "../images/home-2.svg";
 import quoteDownSquarePng from "../images/quote-down-square.svg";
@@ -27,6 +29,12 @@ const pillProps = {
 const NavItem = ({ to, icon, children }) => {
   const match = useMatch({ path: to, end: false }); // safer than includes
   const active = Boolean(match);
+  const { hapticsImpactLight } = useHaptics();
+
+  const handleClick = () => {
+    hapticsImpactLight();
+  };
+
   return (
     <Link
       as={RouterLink}
@@ -38,6 +46,7 @@ const NavItem = ({ to, icon, children }) => {
       color={active ? "white" : "gray.800"}
       fontWeight={active ? "bold" : pillProps.fontWeight || "normal"}
       {...pillProps}
+      onClick={handleClick}
       css={{
         '&:focus-visible': { boxShadow: 'none', outline: 'none' },
         '&:hover .nav-icon': { filter: 'brightness(0) invert(1)' },
@@ -65,8 +74,24 @@ const HamburgerSvg = (props) => (
 
 const SidebarContent = ({ onClose, insideDrawer = false }) => {
   const { logout } = useAuth();
+  const { hapticsImpactMedium } = useHaptics();
+
+  const handleLogout = () => {
+    hapticsImpactMedium();
+    logout();
+  };
+
   return (
-    <Box w="220px" h="100vh" bg="white" opacity={1} position="relative">
+    <Box
+      w="220px"
+      h="100vh"
+      bg="white"
+      opacity={1}
+      position="relative"
+      paddingTop={`var(--status-bar-height, 0px)`}
+      paddingLeft={`var(--safe-area-inset-left, 0px)`}
+      paddingBottom={`var(--safe-area-inset-bottom, 0px)`}
+    >
       {/* Close affordance: use Drawer.CloseTrigger only when rendered inside Drawer */}
       {insideDrawer ? (
         <Drawer.CloseTrigger position="absolute" top={4} right={4} />
@@ -98,7 +123,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
         </VStack>
 
         <Button
-          onClick={logout}
+          onClick={handleLogout}
           position="absolute"
           left="20px"
           bottom="32px"
@@ -123,14 +148,23 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
-  
+  const { hapticsImpactLight } = useHaptics();
+
+  // Initialize SafeArea for native devices
+  useSafeArea();
+
+  const handleHamburgerClick = () => {
+    hapticsImpactLight();
+    setIsSidebarOpen(true);
+  };
+
   return (
     <Box minH="100vh" bg="gray.100">
       {/* Mobile hamburger menu */}
       {isMobile && (
-        <Box position="fixed" top={4} left={4} zIndex={20}>
+        <Box position="fixed" top="calc(16px + var(--status-bar-height, 0px))" left="calc(16px + var(--safe-area-inset-left, 0px))" zIndex={20}>
           <IconButton
-            onClick={() => setIsSidebarOpen(true)}
+            onClick={handleHamburgerClick}
             variant="solid"
             bg="white"
             color="gray.700"
@@ -171,15 +205,16 @@ const Layout = () => {
         </Drawer.Root>
         
         {/* Main Content */}
-        <Box 
-          flex="1" 
-          bg="gray.100" 
-          minH="100vh" 
+        <Box
+          flex="1"
+          bg="gray.100"
+          minH="100vh"
           w="full"
           maxW="100%"
-          pl={{ base: 2, lg: 6 }} 
-          pr={{ base: 2, md: 6 }}
-          pt={{ base: 16, md: 4 }}
+          pl={{ base: "calc(8px + var(--safe-area-inset-left, 0px))", lg: "calc(24px + var(--safe-area-inset-left, 0px))" }}
+          pr={{ base: "calc(8px + var(--safe-area-inset-right, 0px))", md: "calc(24px + var(--safe-area-inset-right, 0px))" }}
+          pt={{ base: "calc(64px + var(--safe-area-inset-top, 0px))", md: "calc(16px + var(--safe-area-inset-top, 0px))" }}
+          pb={{ base: "calc(16px + var(--safe-area-inset-bottom, 0px))", md: "calc(16px + var(--safe-area-inset-bottom, 0px))" }}
           ml={{ base: 0, md: "220px" }}
           transition="margin-left 0.2s"
           overflow="hidden"

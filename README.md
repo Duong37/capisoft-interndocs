@@ -112,3 +112,28 @@ python manage.py spectacular --file schema.json --format openapi-json
 
 # Generate YAML schema (for documentation)
 python manage.py spectacular --file schema.yml --format openapi
+
+
+## Mobile Dependencies
+
+# 1. Install plugin
+cd /Users/duongcapisoft/Dev/interndocs
+npm install @capacitor/camera
+
+# 2. Rebuild frontend (if needed)
+cd frontend
+npm run build
+
+# 3. Sync to native platforms
+cd ..
+npx cap sync
+
+# 4. Install iOS dependencies
+cd ios/App
+pod install
+
+Important Notes:
+- Always run pod install after npx cap sync for iOS - this was the issue we just fixed!
+- For Android only changes, you can skip the pod install step
+- If you only changed web code (no new plugins), you just need steps 2-3
+- The npx cap sync command does: copy web assets + update native configs + run pod install (but the pod install part requires CocoaPods to be installed first, which you now have)
