@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-console.log('Initializing Firebase...');
+console.log('Firebase module loaded, starting initialization...');
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -14,11 +14,26 @@ const firebaseConfig = {
   measurementId: "G-VB0S2R885R"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-console.log('Firebase app initialized');
+console.log('Firebase config:', firebaseConfig.projectId);
 
-export const auth = getAuth(app);
-console.log('Firebase auth initialized');
+let app;
+let auth;
 
+try {
+  // Initialize Firebase
+  console.log('Calling initializeApp...');
+  app = initializeApp(firebaseConfig);
+  console.log('Firebase app initialized successfully');
+  
+  console.log('Getting auth instance...');
+  auth = getAuth(app);
+  console.log('Firebase auth initialized successfully');
+} catch (error) {
+  console.error('FIREBASE INITIALIZATION ERROR:', error);
+  console.error('Error code:', error.code);
+  console.error('Error message:', error.message);
+  console.error('Error stack:', error.stack);
+}
+
+export { auth };
 export default app;

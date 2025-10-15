@@ -56,7 +56,7 @@ SECRET_KEY = 'django-insecure-+r11@ae2w0am24+qf#73=s+u3(s064pzq+snc8&3lbb*5gv$xr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '100.81.107.118', '*']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.0.157', '*']
 
 
 # Application definition
@@ -183,6 +183,9 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://192.168.0.157:3000",  # iOS simulator
+    "capacitor://localhost",      # Capacitor iOS
+    "http://localhost",           # General localhost
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -75,7 +75,7 @@ export const useCreateTodoListMutation = () => {
 };
 
 // Update a todo list
-// Not used since we have useCreateTodoItemInListMutation which includes updating the todo list
+// Not used since we have useCreateTodoItemMutation which includes updating the todo list
 export const useUpdateTodoListMutation = () => {
   const queryClient = useQueryClient();
 

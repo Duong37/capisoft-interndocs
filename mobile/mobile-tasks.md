@@ -8,8 +8,6 @@
     - Use the Capacitor Haptics Plugin: https://capacitorjs.com/docs/v3/apis/haptics
 - Add a splash screen of your choice to your app!
 
-You may have noticed that your auth state does not carry on between sessions. Because local storage works differently on web and mobile, firebase authentication has its own Capacitor plugin to work on mobile apps as well.
-
 ***Task: Adapt your auth flow to work with CapacitorJS***
 
 - Follow the installation guide here: https://www.npmjs.com/package/@capacitor-firebase/authentication.

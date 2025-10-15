@@ -1,8 +1,11 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth } from '../firebase';
-import {
-  signInWithEmailAndPassword,
-  signOut
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { Capacitor } from '@capacitor/core';
+import { auth as firebaseWebAuth } from '../firebase';
+import { 
+  signInWithEmailAndPassword as webSignIn,
+  signOut as webSignOut,
+  onAuthStateChanged
 } from 'firebase/auth';
 import { authService } from '../services/authService';
 
@@ -18,32 +21,57 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null); // Firebase user
-  const [backendUser, setBackendUser] = useState(null); // Django user
+  const [FirebaseUser, setFirebaseUser] = useState(null); // Firebase user
+  const [DjangoUser, setDjangoUser] = useState(null); // Django user
   const [loading, setLoading] = useState(true);
   const [backendLoading, setBackendLoading] = useState(false);
 
+  // Platform detection
+  const isNative = Capacitor.isNativePlatform();
+
+  // Platform-aware Firebase authentication helpers
+  const platformSignIn = async (email, password) => {
+    if (isNative) {
+      return await FirebaseAuthentication.signInWithEmailAndPassword({ email, password });
+    } else {
+      const userCredential = await webSignIn(firebaseWebAuth, email, password);
+      return { user: userCredential.user };
+    }
+  };
+
+  const platformSignOut = async () => {
+    if (isNative) {
+      return await FirebaseAuthentication.signOut();
+    } else {
+      return await webSignOut(firebaseWebAuth);
+    }
+  };
+
+  const platformGetCurrentUser = async () => {
+    if (isNative) {
+      return await FirebaseAuthentication.getCurrentUser();
+    } else {
+      const user = firebaseWebAuth.currentUser;
+      return { user };
+    }
+  };
+
   const login = async (email, password) => {
-    console.log('Login function called with email:', email);
-    console.log('Firebase auth object:', auth ? 'exists' : 'null');
-    
+    console.log('Login attempt for:', email);
+
     try {
-      console.log('Attempting Firebase signInWithEmailAndPassword...');
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Firebase login successful, user:', userCredential.user.email);
-      
-      setUser(userCredential.user);
+      const result = await platformSignIn(email, password);
+      console.log('Firebase login successful');
+
+      setFirebaseUser(result.user);
       setIsAuthenticated(true);
 
       // Fetch backend user data after successful login
-      console.log('Fetching backend user data after login...');
       await fetchBackendUser();
 
       return { success: true };
     } catch (error) {
-      console.error('Login error in AuthContext:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
+      console.error('Login error:', error.message);
       return { success: false, error: error.message };
     }
   };
@@ -51,8 +79,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       const { email, password, user_type } = formData;
-      // console.log('Frontend registration attempt for email:', email, 'user_type:', user_type);
-      // console.log('Registering with backend...', user_type === 'ADMIN' ? 'using admin endpoint' : 'using regular endpoint');
 
       // Register with backend using appropriate endpoint based on user type
       if (user_type === 'ADMIN') {
@@ -61,38 +87,32 @@ export const AuthProvider = ({ children }) => {
         await authService.register(formData);
       }
 
-      // console.log('Backend registration successful');
-
       // Sign in with Firebase after successful backend registration
-      // console.log('Signing in with Firebase...');
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // console.log('Firebase sign-in successful:', userCredential.user.email);
-      setUser(userCredential.user);
+      const result = await platformSignIn(email, password);
+
+      setFirebaseUser(result.user);
       setIsAuthenticated(true);
 
       // Fetch backend user data
-      // console.log('Fetching backend user data...');
       try {
         const backendUserData = await authService.getCurrentUser();
-        setBackendUser(backendUserData);
-        console.log('Backend user data fetched successfully');
+        setDjangoUser(backendUserData);
       } catch (error) {
-        console.log('Error fetching backend user after registration:', error);
+        console.error('Error fetching backend user after registration:', error.message);
       }
 
       return { success: true };
     } catch (error) {
-      console.log('Registration error:', error.code || error.name, error.message);
+      console.error('Registration error:', error.message);
       return { success: false, error: error.message };
     }
   };
 
   const logout = async () => {
     try {
-      await signOut(auth);
-      setUser(null);
-      setBackendUser(null);
+      await platformSignOut();
+      setFirebaseUser(null);
+      setDjangoUser(null);
       setIsAuthenticated(false);
 
       // Clear any stored auth data from localStorage
@@ -104,78 +124,125 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const fetchBackendUser = async () => {
-    if (!auth.currentUser) {
-      console.log('No Firebase user, skipping backend user fetch');
-      return;
-    }
-
-    console.log('Fetching backend user for:', auth.currentUser.email);
-    setBackendLoading(true);
-    
+  const fetchBackendUser = useCallback(async () => {
     try {
-      const backendUserData = await authService.getCurrentUser();
-      setBackendUser(backendUserData);
-      console.log('Backend user fetched successfully:', backendUserData.email);
-    } catch (error) {
-      console.error('Error fetching backend user:', error.message);
-      
-      // Handle different error types
-      if (error.response?.status === 404) {
-        console.log('Backend user not found - user may need to register in Django');
-      } else if (error.code === 'ECONNABORTED') {
-        console.error('Backend request timed out - check API URL configuration');
-      } else if (error.message.includes('Network Error') || error.code === 'ERR_NETWORK') {
-        console.error('Network error - cannot reach backend server');
-        console.error('For iOS: Make sure REACT_APP_API_URL is set to your local IP address');
+      const currentUser = await platformGetCurrentUser();
+      if (!currentUser.user) {
+        return;
       }
-      
-      // Set backendUser to null and continue - don't block the app
-      setBackendUser(null);
-    } finally {
+
+      setBackendLoading(true);
+
+      try {
+        const backendUserData = await authService.getCurrentUser();
+        setDjangoUser(backendUserData);
+      } catch (error) {
+        console.error('Error fetching backend user:', error.message);
+
+        // Set DjangoUser to null and continue - don't block the app
+        setDjangoUser(null);
+      } finally {
+        setBackendLoading(false);
+      }
+    } catch (error) {
+      console.error('Error getting current user from Firebase:', error);
+      setDjangoUser(null);
       setBackendLoading(false);
-      console.log('Backend user fetch complete');
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Listen for Firebase auth state changes
   useEffect(() => {
-    console.log('Setting up Firebase auth state listener');
-    
     // Add a timeout safety net in case Firebase doesn't respond
     const safetyTimeout = setTimeout(() => {
       console.log('Firebase auth listener timeout - forcing loading to false');
       setLoading(false);
     }, 5000);
-    
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-      clearTimeout(safetyTimeout);
-      console.log('Firebase auth state changed:', firebaseUser ? `User: ${firebaseUser.email}` : 'No user (logged out)');
-      
-      setUser(firebaseUser);
-      setIsAuthenticated(!!firebaseUser);
 
-      if (firebaseUser) {
-        await fetchBackendUser();
-      } else {
-        console.log('No Firebase user, clearing backend user');
-        setBackendUser(null);
+    let listenerHandle;
+    let webUnsubscribe;
+
+    const setupAuthListener = async () => {
+      try {
+        if (isNative) {
+          // Native platform - use Capacitor plugin
+          // Initial user check
+          const currentUser = await FirebaseAuthentication.getCurrentUser();
+          console.log('Initial auth state (native):', currentUser.user ? `User: ${currentUser.user.email}` : 'No user');
+
+          setFirebaseUser(currentUser.user);
+          setIsAuthenticated(!!currentUser.user);
+
+          if (currentUser.user) {
+            await fetchBackendUser();
+          } else {
+            setDjangoUser(null);
+          }
+
+          // Set up auth state change listener
+          listenerHandle = await FirebaseAuthentication.addListener('authStateChange', async (user) => {
+            clearTimeout(safetyTimeout);
+            console.log('Auth state changed (native):', user.user ? `User: ${user.user.email}` : 'No user');
+
+            setFirebaseUser(user.user);
+            setIsAuthenticated(!!user.user);
+
+            if (user.user) {
+              await fetchBackendUser();
+            } else {
+              setDjangoUser(null);
+            }
+
+            setLoading(false);
+          });
+
+          setLoading(false);
+        } else {
+          // Web platform - use Firebase JS SDK
+          console.log('Setting up web auth listener');
+          webUnsubscribe = onAuthStateChanged(firebaseWebAuth, async (user) => {
+            clearTimeout(safetyTimeout);
+            console.log('Auth state changed (web):', user ? `User: ${user.email}` : 'No user');
+
+            setFirebaseUser(user);
+            setIsAuthenticated(!!user);
+
+            if (user) {
+              await fetchBackendUser();
+            } else {
+              setDjangoUser(null);
+            }
+
+            setLoading(false);
+          });
+        }
+      } catch (error) {
+        console.error('Error setting up Firebase auth listener:', error);
+        clearTimeout(safetyTimeout);
+        setLoading(false);
       }
+    };
 
-      console.log('Auth loading complete, setting loading to false');
-      setLoading(false);
-    });
+    setupAuthListener();
 
     return () => {
       clearTimeout(safetyTimeout);
-      unsubscribe();
+      if (listenerHandle) {
+        listenerHandle.remove();
+      }
+      if (webUnsubscribe) {
+        webUnsubscribe();
+      }
     };
-  }, []);
+  }, [fetchBackendUser, isNative]);
 
   const value = {
     isAuthenticated,
-    user,
-    backendUser,
+    user: FirebaseUser,
+    FirebaseUser,
+    backendUser: DjangoUser,
+    DjangoUser,
     loading: loading || backendLoading,
     login,
     register,

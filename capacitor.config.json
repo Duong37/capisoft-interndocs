@@ -20,6 +20,10 @@
       "splashImmersive": true,
       "layoutName": "launch_screen",
       "useDialog": true
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["email", "google.com", "apple.com"]
     }
   }
 }

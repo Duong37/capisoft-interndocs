@@ -1,19 +1,21 @@
 import axios from 'axios';
-import { auth } from '../firebase';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { Capacitor } from '@capacitor/core';
+import { auth as firebaseWebAuth } from '../firebase';
 
 // Determine the API base URL based on the platform
 const getApiBaseURL = () => {
   const platform = Capacitor.getPlatform();
   console.log('Running on platform:', platform);
-  
+
   // Check if running on native platform (iOS or Android)
   if (Capacitor.isNativePlatform()) {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000/api';
+    // For iOS simulator, use local IP address instead of localhost
+    const apiUrl = process.env.REACT_APP_API_URL;
     console.log('Native platform - Using API URL:', apiUrl);
     return apiUrl;
   }
-  
+
   // For web, use localhost or environment variable
   const apiUrl = 'http://127.0.0.1:8000/api';
   console.log('Web platform - Using API URL:', apiUrl);
@@ -32,21 +34,44 @@ const api = axios.create({
 // Request interceptor to add Firebase token
 api.interceptors.request.use(
   async (config) => {
-    const currentUser = auth.currentUser;
-    console.log('Request interceptor - Current user:', currentUser?.email || 'No user');
+    try {
+      const isNative = Capacitor.isNativePlatform();
+      
+      if (isNative) {
+        // Native platform - use Capacitor plugin
+        const currentUser = await FirebaseAuthentication.getCurrentUser();
+        console.log('Request interceptor (native) - Current user:', currentUser.user?.email || 'No user');
 
-    if (currentUser) {
-      try {
-        const token = await currentUser.getIdToken();
-        config.headers.Authorization = `Bearer ${token}`;
-        console.log('Added auth token to request:', config.url);
-        // console.log('Token length:', token.length);
-        // console.log('Token first 20 chars:', token.substring(0, 20) + '...');
-      } catch (error) {
-        console.error('Error getting Firebase token:', error);
+        if (currentUser.user) {
+          try {
+            const tokenResult = await FirebaseAuthentication.getIdToken();
+            config.headers.Authorization = `Bearer ${tokenResult.token}`;
+            console.log('Added auth token to request:', config.url);
+          } catch (error) {
+            console.error('Error getting Firebase token:', error);
+          }
+        } else {
+          console.log('No current user, no auth token added');
+        }
+      } else {
+        // Web platform - use Firebase JS SDK
+        const user = firebaseWebAuth.currentUser;
+        console.log('Request interceptor (web) - Current user:', user?.email || 'No user');
+
+        if (user) {
+          try {
+            const token = await user.getIdToken();
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log('Added auth token to request:', config.url);
+          } catch (error) {
+            console.error('Error getting Firebase token:', error);
+          }
+        } else {
+          console.log('No current user, no auth token added');
+        }
       }
-    } else {
-      console.log('No current user, no auth token added');
+    } catch (error) {
+      console.error('Error getting current user:', error);
     }
     return config;
   },
