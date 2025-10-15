@@ -1,9 +1,13 @@
 import React from 'react';
 import { Box, Heading, HStack, Input, Text, VStack } from '@chakra-ui/react';
+import { useSafeArea } from '../hooks/useSafeArea';
 import searchNormalImage from '../images/search-normal.svg';
 import adminLogoTopRight from '../images/Ellipse-816.svg';
 
 const PageHeader = ({ title }) => {
+  // Ensure safe area values are set
+  useSafeArea();
+
   return (
     <>
       {/* Desktop and Mobile Header */}
@@ -72,7 +76,7 @@ const PageHeader = ({ title }) => {
       </HStack>
 
       {/* Mobile admin profile - positioned in top right */}
-      <Box position="fixed" top={4} right={4} zIndex={15} display={{ base: "block", md: "none" }}>
+      <Box position="fixed" top={`calc(16px + var(--safe-area-inset-top, 0px))`} right={`calc(16px + var(--safe-area-inset-right, 0px))`} zIndex={15} display={{ base: "block", md: "none" }}>
         <HStack spacing={3}>
           <Box w="48px" h="48px" borderRadius="full" bg="gray.300" overflow="hidden">
             <img

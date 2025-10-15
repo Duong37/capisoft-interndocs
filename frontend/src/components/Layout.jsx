@@ -88,7 +88,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
       bg="white"
       opacity={1}
       position="relative"
-      paddingTop={`var(--status-bar-height, 0px)`}
+      paddingTop={`var(--safe-area-inset-top, 0px)`}
       paddingLeft={`var(--safe-area-inset-left, 0px)`}
       paddingBottom={`var(--safe-area-inset-bottom, 0px)`}
     >
@@ -98,7 +98,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
       ) : null}
       
       <Box position="relative" h="830px">
-        <VStack align="stretch" spacing={3} px={4} pt={4} pb="80px">
+        <VStack align="stretch" spacing={3} px={4} pt="calc(16px + var(--safe-area-inset-top, 0px))" pb="80px">
           <Text
             fontFamily="Urbanist, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
             fontWeight={900}
@@ -109,7 +109,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }) => {
             whiteSpace="nowrap"
             w="auto"
             maxW="172px"
-            mt="24px"
+            mt="8px"
             ml="10px"
             opacity={1}
             mb={2}
@@ -162,7 +162,7 @@ const Layout = () => {
     <Box minH="100vh" bg="gray.100">
       {/* Mobile hamburger menu */}
       {isMobile && (
-        <Box position="fixed" top="calc(16px + var(--status-bar-height, 0px))" left="calc(16px + var(--safe-area-inset-left, 0px))" zIndex={20}>
+        <Box position="fixed" top="calc(16px + var(--safe-area-inset-top, 0px))" left="calc(16px + var(--safe-area-inset-left, 0px))" zIndex={20}>
           <IconButton
             onClick={handleHamburgerClick}
             variant="solid"
