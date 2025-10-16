@@ -34,6 +34,7 @@ const KpiCardSparkline = ({ width, height }: KpiCardSparklineProps) => (
         width="155px"
         height="88px"
         objectFit="contain"
+        marginLeft="-32px"
       />
     }
   />

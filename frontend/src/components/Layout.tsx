@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { 
-  Box, 
-  VStack, 
-  Link, 
-  Text, 
-  Button, 
-  Image, 
-  IconButton, 
-  useBreakpointValue,
+import {
+  Box,
+  VStack,
+  Link,
+  Text,
+  Button,
+  Image,
+  IconButton,
   DrawerRoot,
   DrawerBackdrop,
   DrawerPositioner,
@@ -19,6 +18,8 @@ import { Link as RouterLink, useMatch, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSafeArea } from "../hooks/useSafeArea";
 import { useHaptics } from "../hooks/useHaptics";
+import { useMobileDetection } from "../hooks/useMobileDetection";
+import { ShakeToLogout } from "./plugin-components/ShakeToLogout";
 import logoutPng from "../images/logout.png";
 import homePng from "../images/home-2.svg";
 import quoteDownSquarePng from "../images/quote-down-square.svg";
@@ -184,7 +185,7 @@ const SidebarContent = ({ onClose, insideDrawer = false }: SidebarContentProps) 
 // Layout wraps all authenticated pages and renders their content via <Outlet />.
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useMobileDetection();
   const { hapticsImpactLight } = useHaptics();
 
   // Initialize SafeArea for native devices
@@ -198,6 +199,9 @@ const Layout = () => {
 
   return (
     <Box minH="100vh" bg="gray.100">
+      {/* Shake to logout functionality - only active when authenticated */}
+      <ShakeToLogout />
+
       {/* Mobile hamburger menu */}
       {isMobile && (
         <Box position="fixed" top="calc(16px + var(--safe-area-inset-top, 0px))" left="calc(16px + var(--safe-area-inset-left, 0px))" zIndex={20}>
@@ -213,7 +217,9 @@ const Layout = () => {
             borderColor="gray.200"
             _hover={{ bg: "gray.50", borderColor: "gray.300" }}
             _active={{ bg: "gray.100" }}
-            p={3}
+            p={2}
+            // minW="40px"
+            // h="40px"
             aria-label="Open sidebar"
           >
             <Box as={HamburgerSvg} boxSize={5} />
@@ -254,11 +260,11 @@ const Layout = () => {
           minH="100vh"
           w="full"
           maxW="100%"
-          pl={{ base: "calc(8px + var(--safe-area-inset-left, 0px))", lg: "calc(24px + var(--safe-area-inset-left, 0px))" }}
-          pr={{ base: "calc(8px + var(--safe-area-inset-right, 0px))", md: "calc(24px + var(--safe-area-inset-right, 0px))" }}
-          pt={{ base: "calc(64px + var(--safe-area-inset-top, 0px))", md: "calc(16px + var(--safe-area-inset-top, 0px))" }}
-          pb={{ base: "calc(16px + var(--safe-area-inset-bottom, 0px))", md: "calc(16px + var(--safe-area-inset-bottom, 0px))" }}
-          ml={{ base: 0, md: "220px" }}
+          pl={isMobile ? "calc(8px + var(--safe-area-inset-left, 0px))" : "calc(24px + var(--safe-area-inset-left, 0px))"}
+          pr={isMobile ? "calc(16px + var(--safe-area-inset-right, 0px))" : "calc(24px + var(--safe-area-inset-right, 0px))"}
+          pt={isMobile ? "calc(64px + var(--safe-area-inset-top, 0px))" : "calc(16px + var(--safe-area-inset-top, 0px))"}
+          pb="calc(16px + var(--safe-area-inset-bottom, 0px))"
+          ml={isMobile ? 0 : "220px"}
           transition="margin-left 0.2s"
           overflow="hidden"
         >

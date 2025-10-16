@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { Capacitor } from '@capacitor/core';
-import { auth } from '../firebase';
-import { User as FirebaseUser, Auth } from 'firebase/auth';
-
-const firebaseWebAuth: Auth = auth!;
+import { auth as firebaseWebAuth } from '../firebase';
+import { User as FirebaseUser } from 'firebase/auth';
 
 // Determine the API base URL based on the platform
 const getApiBaseURL = () => {
@@ -58,6 +56,11 @@ api.interceptors.request.use(
         }
       } else {
         // Web platform - use Firebase JS SDK
+        if (!firebaseWebAuth) {
+          console.log('Firebase auth not initialized yet');
+          return config;
+        }
+
         const user: FirebaseUser | null = firebaseWebAuth.currentUser;
         console.log('Request interceptor (web) - Current user:', user?.email || 'No user');
 

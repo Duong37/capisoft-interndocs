@@ -56,37 +56,14 @@ export const useSafeArea = () => {
             }
           });
         } else {
-          console.log('Running on web platform, setting up CSS environment variable fallback');
-
-          // For web browsers, set reasonable default values that simulate safe areas
-          // This helps visualize the layout and provides consistent spacing
-          document.documentElement.style.setProperty('--safe-area-inset-top', '24px');
-          document.documentElement.style.setProperty('--safe-area-inset-bottom', '20px');
-          document.documentElement.style.setProperty('--safe-area-inset-left', '0px');
-          document.documentElement.style.setProperty('--safe-area-inset-right', '0px');
-          document.documentElement.style.setProperty('--status-bar-height', '24px');
-
-          // Check if CSS environment variables are supported (Safari, iOS Chrome)
-          const envSupport = CSS.supports('padding-top', 'env(safe-area-inset-top)');
-          if (envSupport) {
-            console.log('CSS env() support detected for safe area');
-
-            // Add meta tag for viewport if not present
-            const viewport = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null;
-            if (!viewport) {
-              const meta = document.createElement('meta');
-              meta.name = 'viewport';
-              meta.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover';
-              document.head.appendChild(meta);
-            } else if (!viewport.content.includes('viewport-fit=cover')) {
-              viewport.content += ', viewport-fit=cover';
-            }
-          }
+          console.log('Running on web platform - SafeArea not needed for browsers');
+          // No safe area handling needed for web browsers
+          // CSS will use 0px defaults from calc() functions
         }
       } catch (error) {
         console.error('SafeArea plugin error:', error);
         console.log('SafeArea plugin not available - using CSS defaults');
-        // No fallback values needed - CSS will use 0px defaults from calc() functions
+        // CSS will use 0px defaults from calc() functions
       }
     };
 

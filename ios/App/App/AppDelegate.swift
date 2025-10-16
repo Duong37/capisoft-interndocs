@@ -11,6 +11,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
+
+        // Set up custom shake-detecting view controller
+        // This follows the pattern from official Capacitor iOS plugin examples
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = ShakeBridgeViewController()
+        window?.makeKeyAndVisible()
+
+        print("AppDelegate: Created ShakeBridgeViewController")
+
         return true
     }
 

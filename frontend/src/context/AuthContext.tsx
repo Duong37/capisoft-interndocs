@@ -256,7 +256,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     register,
     logout,
   };
-
+  
   return (
     <AuthContext.Provider value={value}>
       {children}

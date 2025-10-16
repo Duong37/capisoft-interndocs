@@ -16,7 +16,7 @@ import Users from './components/Users';
 import Reviews from './components/Reviews';
 import Todo from './components/Todo';
 import Layout from './components/Layout';
-import SplashScreen from './components/SplashScreen';
+import SplashScreen from './components/plugin-components/SplashScreen';
 import RequireAuth from './routes/RequireAuth';
 import RequireGuest from './routes/RequireGuest';
 

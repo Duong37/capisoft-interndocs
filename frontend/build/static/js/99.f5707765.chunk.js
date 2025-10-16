@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkreact_auth_app=self.webpackChunkreact_auth_app||[]).push([[99],{1099:(e,a,s)=>{s.r(a),s.d(a,{DeviceShakeWeb:()=>n});var t=s(3227);class n extends t.E_{async enableListening(){console.warn("DeviceShake: Web platform does not support shake detection")}async stopListening(){console.warn("DeviceShake: Web platform does not support shake detection")}}}}]);
+//# sourceMappingURL=99.f5707765.chunk.js.map

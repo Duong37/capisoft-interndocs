@@ -26,7 +26,7 @@ const defaultNotifications = [
 
 const NotificationsList = ({ items = defaultNotifications }) => (
   <>
-    <HStack justify="space-between" mb={2}>
+    <HStack justify="space-between" >
       <Text
         fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
         fontWeight={500}
@@ -40,7 +40,7 @@ const NotificationsList = ({ items = defaultNotifications }) => (
       <Button size="md" variant="ghost">View all</Button>
     </HStack>
     <Box pb={2} /> {/* Add padding between HStack and VStack */}
-    <VStack align="stretch" gap={0}>
+    <VStack align="stretch">
       {items.map((n, idx) => (
         <React.Fragment key={idx}>
           {idx !== 0 && (

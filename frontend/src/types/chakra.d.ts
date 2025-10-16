@@ -70,5 +70,31 @@ declare module '@chakra-ui/react' {
     spacing?: number;
     [key: string]: any;
   }
+
+  // Dialog components
+  interface DialogContentProps {
+    children?: ReactNode;
+    [key: string]: any;
+  }
+
+  interface DialogHeaderProps {
+    children?: ReactNode;
+    [key: string]: any;
+  }
+
+  interface DialogBodyProps {
+    children?: ReactNode;
+    [key: string]: any;
+  }
+
+  interface DialogFooterProps {
+    children?: ReactNode;
+    [key: string]: any;
+  }
+
+  interface DialogTitleProps {
+    children?: ReactNode;
+    [key: string]: any;
+  }
 }
 
