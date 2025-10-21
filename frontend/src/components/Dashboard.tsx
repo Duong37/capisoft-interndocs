@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Grid, GridItem, Text, HStack, Box, VStack, Button } from '@chakra-ui/react';
 import PageHeader from './PageHeader';
+import { useMobileDetection } from '../hooks/useMobileDetection';
 // charts and cards live in dashboard-components/*
 import Card from './dashboard-components/card';
 import KpiTakedowns from './dashboard-components/kpi-takedowns';
@@ -16,6 +17,7 @@ import TopAdminCard from './dashboard-components/top-admin';
 
 const Dashboard = () => {
   const [selectedPlatform, setSelectedPlatform] = useState('All');
+  const isMobile = useMobileDetection();
 
   return (
     <Box>
@@ -29,77 +31,156 @@ const Dashboard = () => {
         mb={{ base: 4, md: 6 }}
         gap={{ base: 4, md: 0 }}
       >
-        <HStack
-          w="full"
-          justify="space-between"
-          align="center"
-          gap={{ base: 4, md: 0 }}
-        >
-          <Text
-            color="black"
-            fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-            fontWeight={500}
-            fontStyle="normal"
-            fontSize="18px"
-            lineHeight="160%"
-            letterSpacing="0"
+        {/* Platform selector - different layout for mobile vs desktop */}
+        {isMobile ? (
+          // Mobile layout: date on left, VStack with platform selector on right
+          <HStack
+            w="full"
+            justify="space-between"
+            align="flex-start"
+            gap={4}
           >
-            Wed, Oct 27
-          </Text>
-
-          <HStack gap={3}>
             <Text
-              color="gray.600"
+              color="black"
               fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
               fontWeight={500}
               fontStyle="normal"
-              fontSize="12px"
+              fontSize="18px"
+              lineHeight="160%"
+              letterSpacing="0"
+              flexShrink={0}
+            >
+              Wed, Oct 27
+            </Text>
+
+            <VStack alignItems="flex-end" gap={3} flex={1}>
+              <Text
+                color="gray.600"
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontWeight={500}
+                fontStyle="normal"
+                fontSize="12px"
+                lineHeight="160%"
+                letterSpacing="0"
+              >
+                Choose Platform :
+              </Text>
+              <HStack gap={3}>
+                <Button
+                  size="sm"
+                  height="36px"
+                  px="16px"
+                  bg={selectedPlatform === 'Alibaba' ? '#6F6CF3' : 'white'}
+                  color={selectedPlatform === 'Alibaba' ? 'white' : 'black'}
+                  borderRadius="12px"
+                  border="none"
+                  _hover={{ bg: '#6F6CF3', color: 'white' }}
+                  onClick={() => setSelectedPlatform('Alibaba')}
+                >
+                  Alibaba
+                </Button>
+                <Button
+                  size="sm"
+                  height="36px"
+                  px="16px"
+                  bg={selectedPlatform === 'AliExpress' ? '#6F6CF3' : 'white'}
+                  color={selectedPlatform === 'AliExpress' ? 'white' : 'black'}
+                  borderRadius="12px"
+                  border="none"
+                  _hover={{ bg: '#6F6CF3', color: 'white' }}
+                  onClick={() => setSelectedPlatform('AliExpress')}
+                >
+                  AliExpress
+                </Button>
+                <Button
+                  size="sm"
+                  height="36px"
+                  px="16px"
+                  bg={selectedPlatform === 'All' ? '#6F6CF3' : 'white'}
+                  color={selectedPlatform === 'All' ? 'white' : 'black'}
+                  borderRadius="12px"
+                  border="none"
+                  _hover={{ bg: '#6F6CF3', color: 'white' }}
+                  onClick={() => setSelectedPlatform('All')}
+                >
+                  All
+                </Button>
+              </HStack>
+            </VStack>
+          </HStack>
+        ) : (
+          // Desktop layout: date on left, platform selector on right (unchanged)
+          <HStack
+            w="full"
+            justify="space-between"
+            align="center"
+            gap={0}
+          >
+            <Text
+              color="black"
+              fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+              fontWeight={500}
+              fontStyle="normal"
+              fontSize="18px"
               lineHeight="160%"
               letterSpacing="0"
             >
-              Choose Platform :
+              Wed, Oct 27
             </Text>
-            <Button
-            size="sm"
-            height="36px"
-            px="16px"
-            bg={selectedPlatform === 'Alibaba' ? '#6F6CF3' : 'white'}
-            color={selectedPlatform === 'Alibaba' ? 'white' : 'black'}
-            borderRadius="12px"
-            border="none"
-            _hover={{ bg: '#6F6CF3', color: 'white' }}
-            onClick={() => setSelectedPlatform('Alibaba')}
-          >
-            Alibaba
-          </Button>
-          <Button
-            size="sm"
-            height="36px"
-            px="16px"
-            bg={selectedPlatform === 'AliExpress' ? '#6F6CF3' : 'white'}
-            color={selectedPlatform === 'AliExpress' ? 'white' : 'black'}
-            borderRadius="12px"
-            border="none"
-            _hover={{ bg: '#6F6CF3', color: 'white' }}
-            onClick={() => setSelectedPlatform('AliExpress')}
-          >
-            AliExpress
-          </Button>
-          <Button
-            size="sm"
-            height="36px"
-            px="16px"
-            bg={selectedPlatform === 'All' ? '#6F6CF3' : 'white'}
-            color={selectedPlatform === 'All' ? 'white' : 'black'}
-            borderRadius="12px"
-            border="none"
-            _hover={{ bg: '#6F6CF3', color: 'white' }}
-            onClick={() => setSelectedPlatform('All')}
-          >
-            All
-          </Button>
+            <HStack gap={3}>
+              <Text
+                color="gray.600"
+                fontFamily="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                fontWeight={500}
+                fontStyle="normal"
+                fontSize="12px"
+                lineHeight="160%"
+                letterSpacing="0"
+              >
+                Choose Platform :
+              </Text>
+              <Button
+                size="sm"
+                height="36px"
+                px="16px"
+                bg={selectedPlatform === 'Alibaba' ? '#6F6CF3' : 'white'}
+                color={selectedPlatform === 'Alibaba' ? 'white' : 'black'}
+                borderRadius="12px"
+                border="none"
+                _hover={{ bg: '#6F6CF3', color: 'white' }}
+                onClick={() => setSelectedPlatform('Alibaba')}
+              >
+                Alibaba
+              </Button>
+              <Button
+                size="sm"
+                height="36px"
+                px="16px"
+                bg={selectedPlatform === 'AliExpress' ? '#6F6CF3' : 'white'}
+                color={selectedPlatform === 'AliExpress' ? 'white' : 'black'}
+                borderRadius="12px"
+                border="none"
+                _hover={{ bg: '#6F6CF3', color: 'white' }}
+                onClick={() => setSelectedPlatform('AliExpress')}
+              >
+                AliExpress
+              </Button>
+              <Button
+                size="sm"
+                height="36px"
+                px="16px"
+                bg={selectedPlatform === 'All' ? '#6F6CF3' : 'white'}
+                color={selectedPlatform === 'All' ? 'white' : 'black'}
+                borderRadius="12px"
+                border="none"
+                _hover={{ bg: '#6F6CF3', color: 'white' }}
+                onClick={() => setSelectedPlatform('All')}
+              >
+                All
+              </Button>
+            </HStack>
           </HStack>
-        </HStack>
+        )}
       </VStack>
 
       {/* KPI Cards */}

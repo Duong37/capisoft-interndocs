@@ -11,13 +11,14 @@ const getApiBaseURL = () => {
 
   // Check if running on native platform (iOS or Android)
   if (Capacitor.isNativePlatform()) {
-    // For iOS simulator, use local IP address instead of localhost
-    const apiUrl = process.env.REACT_APP_API_URL;
+    // For native platforms (iOS/Android), use network IP to reach host machine
+    // The backend should be running with: python manage.py runserver 0.0.0.0:8000
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://100.81.107.118:8000/api';
     console.log('Native platform - Using API URL:', apiUrl);
     return apiUrl;
   }
 
-  // For web, use localhost or environment variable
+  // For web, use localhost
   const apiUrl = 'http://127.0.0.1:8000/api';
   console.log('Web platform - Using API URL:', apiUrl);
   return apiUrl;

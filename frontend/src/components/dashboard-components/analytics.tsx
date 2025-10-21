@@ -77,7 +77,7 @@ const AnalyticsChart = ({ data = defaultData }: AnalyticsChartProps) => {
         </HStack>
       </HStack>
 
-      <Box w="100%" h="266px" overflow="visible">
+      <Box w="100%" h="276px" overflow="visible">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}

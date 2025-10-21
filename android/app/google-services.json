@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "799949711751",
+    "project_id": "interndocs-todo-project",
+    "storage_bucket": "interndocs-todo-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799949711751:android:c4a137076acafe66640b22",
+        "android_client_info": {
+          "package_name": "com.duong.todoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqrLZovEm8CbPecYhOByc9GE5glV44jXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

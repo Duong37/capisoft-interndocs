@@ -25,11 +25,8 @@ export const useMobileDetection = () => {
 
       // Check for touch capabilities (most mobile devices have touch)
       const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-      // Combined logic:
-      // 1. If user agent indicates mobile, always treat as mobile regardless of width
-      // 2. If device has touch and is low memory, likely mobile
-      // 3. Otherwise, fall back to width check
+      
+      // If user agent indicates mobile, always treat as mobile regardless of width
       let isMobileDevice = isMobileUserAgent;
 
       if (!isMobileUserAgent && hasTouch) {

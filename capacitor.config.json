@@ -3,7 +3,7 @@
   "appName": "Todo App",
   "webDir": "frontend/build",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "http"
   },
   "plugins": {
     "SplashScreen": {

@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication'; // native ios/android auth
 import { Capacitor } from '@capacitor/core';
-import { auth } from '../firebase';
+import { auth } from '../firebase'; // desktop auth
 import {
   signInWithEmailAndPassword as webSignIn,
   signOut as webSignOut,
@@ -30,11 +30,11 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // whether the user is authenticated
   const [firebaseUser, setFirebaseUser] = useState<any>(null); // Firebase user (any due to native/web SDK differences)
   const [djangoUser, setDjangoUser] = useState<User | null>(null); // Django user
-  const [loading, setLoading] = useState(true);
-  const [backendLoading, setBackendLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // whether the app is loading
+  const [backendLoading, setBackendLoading] = useState(false); // whether the backend is loading
 
   // Platform detection
   const isNative = Capacitor.isNativePlatform();
@@ -177,15 +177,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         if (isNative) {
           // Native platform - use Capacitor plugin
-          // Initial user check
+          // Check initial user state
           const currentUser = await FirebaseAuthentication.getCurrentUser();
           console.log('Initial auth state (native):', currentUser.user ? `User: ${currentUser.user.email}` : 'No user');
 
-          setFirebaseUser(currentUser.user ?? null);
-          setIsAuthenticated(!!currentUser.user);
+          setFirebaseUser(currentUser.user ?? null); // restore the firebase user
+          setIsAuthenticated(!!currentUser.user); // restore the authentication state based on the firebase user
 
           if (currentUser.user) {
-            await fetchBackendUser();
+            await fetchBackendUser(); // sync the django user data
           } else {
             setDjangoUser(null);
           }
